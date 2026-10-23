@@ -1,0 +1,154 @@
+openapi: 3.1.0
+info:
+  title: Lesson Scheduling API
+  version: 0.1.0
+  description: API contract for managing users, instructor availability, and lesson appointments.
+paths:
+  /auth/login:
+    post:
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT] }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /users:
+    post:
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NewUser' }
+      responses:
+        '201':
+          description: User successfully created
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /availability:
+    get:
+      operationId: listAvailability
+      parameters:
+        - in: query
+          name: instructorId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching availability slots
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Availability' }
+    post:
+      operationId: addAvailability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NewAvailability' }
+      responses:
+        '201':
+          description: Availability added
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /appointments:
+    post:
+      operationId: createAppointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NewAppointment' }
+      responses:
+        '201':
+          description: Appointment successfully created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Appointment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409':
+          description: Requested interval conflicts with an active reservation
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+components:
+  schemas:
+    NewUser:
+      type: object
+      required: [name, email, role]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        role: { type: string, enum: [INSTRUCTOR, STUDENT] }
+    Availability:
+      type: object
+      required: [id, instructorId, startTime, endTime]
+      properties:
+        id: { type: string }
+        instructorId: { type: string }
+        startTime: { type: string, format: date-time }
+        endTime: { type: string, format: date-time }
+    NewAvailability:
+      type: object
+      required: [startTime, endTime]
+      properties:
+        startTime: { type: string, format: date-time }
+        endTime: { type: string, format: date-time }
+    NewAppointment:
+      type: object
+      required: [availabilityId, studentId]
+      properties:
+        availabilityId: { type: string }
+        studentId: { type: string }
+    Appointment:
+      allOf:
+        - $ref: '#/components/schemas/NewAppointment'
+        - type: object
+          required: [id, status]
+          properties:
+            id: { type: string }
+            status:
+              type: string
+              enum: [SCHEDULED, CANCELLED, COMPLETED]
+    Problem:
+      type: object
+      required: [title, status, code]
+      properties:
+        title: { type: string }
+        status: { type: integer }
+        code: { type: string, example: SLOT_UNAVAILABLE }
+        detail: { type: string }
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid authentication
+    Forbidden:
+      description: Subject lacks permission (e.g., student attempting admin action)

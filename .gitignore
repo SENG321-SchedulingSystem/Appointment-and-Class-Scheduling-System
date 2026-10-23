@@ -218,3 +218,22 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------
+# DİĞER TEKNOLOJİLER VE EDİTÖR AYARLARI (Sonradan Eklenenler)
+# ---------------------------------------------------
+
+# React / Node.js (JS)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+# (Not: build/ ve dist/ Python kısmında zaten olduğu için buraya eklenmedi)
+
+# PHP / Composer
+vendor/
+
+# IDE & İşletim Sistemi
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

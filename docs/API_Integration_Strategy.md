@@ -11,7 +11,7 @@ This document describes how the frontend and backend of the Scheduling System ar
 
 | Environment | Base URL | Purpose |
 | :--- | :--- | :--- |
-| **mock** | `http://127.0.0.1:4010` | Prism mock generated from `openapi.yaml`. Used for frontend development and contract tests before the backend exists. |
+| **mock** | `http://localhost:3000` | Prism mock generated from `openapi.yaml` (matches the `servers` entry). Used for frontend development and contract tests before the backend exists. |
 | **dev** | To be defined in Sprint 2 | Real backend connected to the Firebase development project. |
 | **prod** | Deferred | Not part of the first release. |
 
@@ -32,8 +32,9 @@ The frontend reads the base URL from a single configuration value, so switching 
 ### 4. Authentication Flow
 1. The client calls `POST /auth/login` with email and password.
 2. The response returns a `token` and the user's `role` (`ADMIN`, `INSTRUCTOR`, `STUDENT`).
-3. The client sends the token on every later request in the `Authorization: Bearer <token>` header.
+3. The client sends the token on every later request in the `Authorization: Bearer <token>` header (`bearerAuth` in the contract). Only `POST /auth/login` is public.
 4. The client uses `role` only to decide which screens to show. The backend always enforces permissions itself.
+5. The client never sends its own user ID for actions on its own behalf. For example, `POST /appointments` only contains `availabilityId`; the backend reads the student ID from the token.
 
 ### 5. Running the Mock Server
 Requires Node.js. No installation inside the repository is needed.
@@ -42,33 +43,36 @@ Requires Node.js. No installation inside the repository is needed.
 # Validate the contract
 npx @redocly/cli@1 lint openapi.yaml --extends=minimal
 
-# Start the mock server
-npx @stoplight/prism-cli@5 mock openapi.yaml -p 4010
+# Start the mock server on the port defined in `servers`
+npx @stoplight/prism-cli@5 mock openapi.yaml -p 3000
 
-# Book a slot (success)
-curl -X POST http://127.0.0.1:4010/appointments \
-  -H "Content-Type: application/json" \
-  -d '{"availabilityId":"AV-12","studentId":"U-201"}'
+# Book a slot (success). Any bearer token is accepted by the mock.
+curl -X POST http://localhost:3000/appointments \
+  -H "Authorization: Bearer test" -H "Content-Type: application/json" \
+  -d '{"availabilityId":"avail_789"}'
 
 # Force the double-booking case
-curl -X POST http://127.0.0.1:4010/appointments \
-  -H "Prefer: code=409" -H "Content-Type: application/json" \
-  -d '{"availabilityId":"AV-12","studentId":"U-201"}'
+curl -X POST http://localhost:3000/appointments \
+  -H "Authorization: Bearer test" -H "Prefer: code=409" -H "Content-Type: application/json" \
+  -d '{"availabilityId":"avail_789"}'
 ```
 
-The `Prefer: code=<status>` header asks Prism to return a specific documented response, which lets the frontend and QA exercise error paths without a backend.
+The `Prefer: code=<status>` header asks Prism to return a specific documented response, which lets the frontend and QA exercise error paths without a backend. Requests without the `Authorization` header are rejected with `401`, the same as the real backend.
 
 ### 6. Sprint 1 Verification Evidence
-Run on 24 October 2026 against `openapi.yaml` on `develop`.
+Run on 24 October 2026 against `openapi.yaml` **v0.2.0** on `develop`.
 
-| Check | Request | Result |
-| :--- | :--- | :--- |
-| Contract structure | `redocly lint --extends=minimal` | Valid |
-| Book a free slot (US-05) | `POST /appointments` with full body | `201` with an `Appointment` body |
-| Double booking (US-05) | `POST /appointments` with `Prefer: code=409` | `409` with `code: SLOT_UNAVAILABLE` |
-| Invalid input | `POST /appointments` without `studentId` | `400` (Prism request validation) |
-| List free slots (US-04) | `GET /availability?instructorId=U-101` | `200` with an `Availability` array |
-| Login | `POST /auth/login` | `200` with `token` and `role` |
+| Check | Story | Request | Result |
+| :--- | :--- | :--- | :--- |
+| Contract structure | - | `redocly lint --extends=minimal` | Valid (0 errors) |
+| Login | - | `POST /auth/login` | `200` with `token` and `role` |
+| Create a user | US-01 | `POST /users` | `201` |
+| Duplicate email | US-01 | `POST /users` with `Prefer: code=409` | `409` with a `Problem` body |
+| Assign a student to an instructor | US-02 | `POST /assignments` | `201` |
+| List free slots in a date range | US-04 | `GET /availability?instructorId=inst_123&from=...&to=...` | `200` with an `Availability` array |
+| Book a free slot | US-05 | `POST /appointments` | `201` with an `Appointment` body (`status: SCHEDULED`) |
+| Double booking | US-05 | `POST /appointments` with `Prefer: code=409` | `409` with `code: SLOT_UNAVAILABLE` |
+| Book without logging in | US-05 | `POST /appointments` without token | `401` |
 
 ### 7. Contract Change Rules
 1. Any change to `openapi.yaml` starts with a GitHub issue describing the reason.
@@ -76,10 +80,14 @@ Run on 24 October 2026 against `openapi.yaml` on `develop`.
 3. `info.version` is increased for every merged change (e.g., `0.1.0` → `0.2.0`).
 4. Frontend, backend, and tests are updated only after the contract change is merged into `develop`.
 
-### 8. Open Points for the Contract
-These were found while integrating the mock server and are tracked as issues for the architect:
-* No operation for US-02 (assigning a student to an instructor).
-* `POST /users` has no `409` response for duplicate email (US-01 acceptance criteria).
-* `GET /availability` has no `from` / `to` parameters for boundary date searches (US-04).
-* No `servers`, `securitySchemes`, or `example` values. Mock responses therefore contain placeholder strings.
-* `NewAppointment.studentId` could be taken from the token instead of the request body, so a student cannot book on behalf of someone else.
+### 8. Contract Review Log
+Points found while integrating the mock server with v0.1.0, and their status:
+
+| Point | Status |
+| :--- | :--- |
+| No operation for US-02 (assigning a student to an instructor) | Resolved in v0.2.0 (`POST /assignments`) |
+| `POST /users` had no `409` for duplicate email (US-01) | Resolved in v0.2.0 |
+| `GET /availability` had no `from` / `to` parameters (US-04) | Resolved in v0.2.0 |
+| No `servers`, `securitySchemes`, or `example` values | Resolved in v0.2.0 |
+| `studentId` was sent in the request body of `POST /appointments` | Resolved in v0.2.0 (taken from the token) |
+| Duplicate email and occupied slot share the example error code `SLOT_UNAVAILABLE` | Open, proposed for Sprint 2 (e.g., a separate `EMAIL_ALREADY_EXISTS` code) |

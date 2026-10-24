@@ -25,23 +25,34 @@ flowchart LR
 * Dynamic lesson package quota deductions.
 * Historical lesson notes and physical attendance tracking.
 
-## Team Roles & RACI Matrix
+# RACI Matrix - SENG 321 Appointment Scheduling System
 
-* **Miraç**: Product Owner and Requirements Engineer
-* **Eren**: Lead Software Architect and Technical Lead
-* **Furkan**: Implementation and Integration Engineer
-* **Nida**: Scrum Master and Agile Process Coach
-* **Merve**: Quality Assurance and Test Automation Engineer
-* **Kağan**: DevOps and CI/CD Infrastructure Engineer
+This document defines the roles and responsibilities of the team members for Sprint 1 and the overall development lifecycle using the RACI framework.
 
-| Task / Deliverable | PO (Miraç) | Architect (Eren) | Developer (Furkan) | Scrum Master (Nida) | QA (Merve) | DevOps (Kağan) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Scope & Backlog Approval** | A | C | R | C | C | I |
-| **OpenAPI & Architecture** | C | A | R | I | R | I |
-| **Git-Flow & Repo Rules** | I | C | R | A | C | R |
-| **Testing & Quality Approval**| C | R | R | R | A | C |
+### Team Roles
+* **Miraç Burak Esentürk:** Product Owner (PO) & Requirements Engineer
+* **Eren Okat:** Lead Software Architect & Technical Lead
+* **Furkan Çelebi:** Implementation & Integration Engineer
+* **Ayşe Nida Yalçınkaya:** Scrum Master & Agile Process Coach
+* **Merve Öksüz:** QA & Test Automation Engineer
+* **Şükrü Kağan Demir:** DevOps & CI/CD Infrastructure Engineer
 
-*(R: Responsible, A: Accountable, C: Consulted, I: Informed)*
+### RACI Matrix
+
+| Activity / Deliverable | Miraç (PO) | Eren (Architect) | Furkan (Implementation) | Nida (Scrum Master) | Merve (QA) | Kağan (DevOps) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Project Scope & Backlog Management** | R/A | C | I | C | I | I |
+| **System Architecture & OpenAPI Design** | I | R/A | C | I | C | I |
+| **Git-Flow Rules & CI/CD Pipeline** | I | C | I | I | I | R/A |
+| **Acceptance Criteria & Test Scenarios** | C | I | I | C | R/A | I |
+| **Core Code Implementation & Integration** | I | A | R | I | C | C |
+| **Agile Process & Sprint Facilitation** | C | I | I | R/A | C | I |
+
+### Legend
+* **R (Responsible):** The person who actually does the work to complete the task.
+* **A (Accountable):** The person who is ultimately answerable for the correct completion of the deliverable.
+* **C (Consulted):** Those whose opinions are sought, typically subject matter experts (two-way communication).
+* **I (Informed):** Those who are kept up-to-date on progress (one-way communication).
 
 ## Repository Workflow (Git-Flow)
 * `main`: Contains assessed or released versions only (e.g., tagged `sprint-1`).

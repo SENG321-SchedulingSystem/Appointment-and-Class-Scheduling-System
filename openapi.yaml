@@ -1,12 +1,19 @@
 openapi: 3.1.0
 info:
   title: Lesson Scheduling API
-  version: 0.1.0
+  version: 0.2.0
   description: API contract for managing users, instructor availability, and lesson appointments.
+servers:
+  - url: http://localhost:3000
+    description: Mock Development Server
+security:
+  - bearerAuth: []
 paths:
   /auth/login:
     post:
+      summary: Kullanıcı girişi (Token alır)
       operationId: loginUser
+      security: [] # Giriş yaparken token istenmez
       requestBody:
         required: true
         content:
@@ -15,22 +22,24 @@ paths:
               type: object
               required: [email, password]
               properties:
-                email: { type: string, format: email }
-                password: { type: string }
+                email: { type: string, format: email, example: "eren@example.com" }
+                password: { type: string, example: "sifre123" }
       responses:
         '200':
-          description: Successful authentication
+          description: Başarılı giriş
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token: { type: string }
-                  role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT] }
+                  token: { type: string, example: "eyJhbGciOiJIUzI1NiIsInR5c..." }
+                  role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT], example: "STUDENT" }
+        '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
   /users:
     post:
+      summary: Yeni kullanıcı oluşturur (Kayıt)
       operationId: createUser
       requestBody:
         required: true
@@ -39,27 +48,57 @@ paths:
             schema: { $ref: '#/components/schemas/NewUser' }
       responses:
         '201':
-          description: User successfully created
+          description: Kullanıcı başarıyla oluşturuldu
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409':
+          description: E-posta adresi zaten kullanımda (US-01)
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+  /assignments:
+    post:
+      summary: Öğrenciyi hocaya atama (US-02)
+      operationId: assignStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Assignment' }
+      responses:
+        '201':
+          description: Atama başarılı
         '400': { $ref: '#/components/responses/BadRequest' }
         '403': { $ref: '#/components/responses/Forbidden' }
 
   /availability:
     get:
+      summary: Belirli tarih aralığındaki müsaitlikleri getirir (US-04)
       operationId: listAvailability
       parameters:
         - in: query
           name: instructorId
           required: true
-          schema: { type: string }
+          schema: { type: string, example: "inst_123" }
+        - in: query
+          name: from
+          required: false
+          schema: { type: string, format: date-time, example: "2026-11-01T09:00:00Z" }
+        - in: query
+          name: to
+          required: false
+          schema: { type: string, format: date-time, example: "2026-11-07T17:00:00Z" }
       responses:
         '200':
-          description: Matching availability slots
+          description: Eşleşen boş saatler
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Availability' }
     post:
+      summary: Hocanın yeni müsaitlik eklemesi
       operationId: addAvailability
       requestBody:
         required: true
@@ -68,12 +107,14 @@ paths:
             schema: { $ref: '#/components/schemas/NewAvailability' }
       responses:
         '201':
-          description: Availability added
+          description: Müsaitlik eklendi
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
 
   /appointments:
     post:
+      summary: Yeni randevu oluşturur (Öğrenci ID token'dan alınır)
       operationId: createAppointment
       requestBody:
         required: true
@@ -82,73 +123,87 @@ paths:
             schema: { $ref: '#/components/schemas/NewAppointment' }
       responses:
         '201':
-          description: Appointment successfully created
+          description: Randevu başarıyla oluşturuldu
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Appointment' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '409':
-          description: Requested interval conflicts with an active reservation
+          description: Seçilen saat başkası tarafından alınmış
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     NewUser:
       type: object
       required: [name, email, role]
       properties:
-        name: { type: string }
-        email: { type: string, format: email }
-        role: { type: string, enum: [INSTRUCTOR, STUDENT] }
+        name: { type: string, example: "Eren Okat" }
+        email: { type: string, format: email, example: "eren@example.com" }
+        role: { type: string, enum: [INSTRUCTOR, STUDENT], example: "STUDENT" }
+    Assignment:
+      type: object
+      required: [studentId, instructorId]
+      properties:
+        studentId: { type: string, example: "stu_456" }
+        instructorId: { type: string, example: "inst_123" }
     Availability:
       type: object
       required: [id, instructorId, startTime, endTime]
       properties:
-        id: { type: string }
-        instructorId: { type: string }
-        startTime: { type: string, format: date-time }
-        endTime: { type: string, format: date-time }
+        id: { type: string, example: "avail_789" }
+        instructorId: { type: string, example: "inst_123" }
+        startTime: { type: string, format: date-time, example: "2026-11-01T10:00:00Z" }
+        endTime: { type: string, format: date-time, example: "2026-11-01T11:00:00Z" }
     NewAvailability:
       type: object
       required: [startTime, endTime]
       properties:
-        startTime: { type: string, format: date-time }
-        endTime: { type: string, format: date-time }
+        startTime: { type: string, format: date-time, example: "2026-11-01T10:00:00Z" }
+        endTime: { type: string, format: date-time, example: "2026-11-01T11:00:00Z" }
     NewAppointment:
       type: object
-      required: [availabilityId, studentId]
+      required: [availabilityId]
       properties:
-        availabilityId: { type: string }
-        studentId: { type: string }
+        availabilityId: { type: string, example: "avail_789" }
+        # studentId parametresi güvenlik gereği kaldırıldı. Backend bunu Header'daki JWT token'dan okuyacak.
     Appointment:
       allOf:
         - $ref: '#/components/schemas/NewAppointment'
         - type: object
-          required: [id, status]
+          required: [id, status, studentId]
           properties:
-            id: { type: string }
+            id: { type: string, example: "apt_321" }
+            studentId: { type: string, example: "stu_456" }
             status:
               type: string
               enum: [SCHEDULED, CANCELLED, COMPLETED]
+              example: "SCHEDULED"
     Problem:
       type: object
       required: [title, status, code]
       properties:
-        title: { type: string }
-        status: { type: integer }
-        code: { type: string, example: SLOT_UNAVAILABLE }
-        detail: { type: string }
+        title: { type: string, example: "Conflict" }
+        status: { type: integer, example: 409 }
+        code: { type: string, example: "SLOT_UNAVAILABLE" }
+        detail: { type: string, example: "Bu saat zaten dolu veya e-posta kullanımda." }
 
   responses:
     BadRequest:
-      description: Invalid request
+      description: Eksik veya hatalı istek
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
     Unauthorized:
-      description: Missing or invalid authentication
+      description: Token eksik veya geçersiz (Giriş yapılmamış)
     Forbidden:
-      description: Subject lacks permission (e.g., student attempting admin action)
+      description: Yetki yetersiz (Örn: Öğrenci hoca ataması yapmaya çalışıyor)

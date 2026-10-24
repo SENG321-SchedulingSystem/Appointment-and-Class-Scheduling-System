@@ -8,10 +8,11 @@ For instructors, students, and administrators who need dependable coordination o
 ## System Boundary
 
 ~~~mermaid
-flowchart LR
-    Admin[Administrator] -->|Manages accounts and assigns roles| System[Scheduling System]
-    Instructor[Instructor] -->|Submits availability intervals| System
-    Student[Student] -->|Searches availability and requests reservations| System
+ graph TD
+   Student[Student] -->|Books / Views appointments| Frontend(React Frontend)
+   Instructor[Instructor] -->|Submits availability| Frontend
+   Frontend -->|API Requests with JWT Token| Backend(Node.js / Express API)
+   Backend -->|Read/Write Data| DB[(Firebase Database)]
 ~~~
 
 **Inside the software responsibility:**

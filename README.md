@@ -8,10 +8,11 @@ For instructors, students, and administrators who need dependable coordination o
 ## System Boundary
 
 ~~~mermaid
-flowchart LR
-    Admin[Administrator] -->|Manages accounts and assigns roles| System[Scheduling System]
-    Instructor[Instructor] -->|Submits availability intervals| System
-    Student[Student] -->|Searches availability and requests reservations| System
+graph TD
+  Admin[Admin] -->|Creates users & assigns roles| System(Scheduling System)
+  Instructor[Instructor] -->|Submits availability| System
+  Student[Student] -->|Books / Views appointments| System
+  System -->|Reads/Writes Data| DB[(Firebase Database)]
 ~~~
 
 **Inside the software responsibility:**

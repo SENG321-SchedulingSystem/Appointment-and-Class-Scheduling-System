@@ -1,12 +1,19 @@
 openapi: 3.1.0
 info:
   title: Lesson Scheduling API
-  version: 0.1.0
+  version: 0.2.0
   description: API contract for managing users, instructor availability, and lesson appointments.
+servers:
+  - url: http://localhost:3000
+    description: Mock Development Server
+security:
+  - bearerAuth: []
 paths:
   /auth/login:
     post:
+      summary: User login (Obtains token)
       operationId: loginUser
+      security: []
       requestBody:
         required: true
         content:
@@ -15,22 +22,24 @@ paths:
               type: object
               required: [email, password]
               properties:
-                email: { type: string, format: email }
-                password: { type: string }
+                email: { type: string, format: email, example: "eren@example.com" }
+                password: { type: string, example: "password123" }
       responses:
         '200':
-          description: Successful authentication
+          description: Successful login
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  token: { type: string }
-                  role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT] }
+                  token: { type: string, example: "eyJhbGciOiJIUzI1NiIsInR5c..." }
+                  role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT], example: "STUDENT" }
+        '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
   /users:
     post:
+      summary: Creates a new user (Registration)
       operationId: createUser
       requestBody:
         required: true
@@ -42,24 +51,54 @@ paths:
           description: User successfully created
         '400': { $ref: '#/components/responses/BadRequest' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '409':
+          description: Email address is already in use (US-01)
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+  /assignments:
+    post:
+      summary: Assigns a student to an instructor (US-02)
+      operationId: assignStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Assignment' }
+      responses:
+        '201':
+          description: Assignment successful
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
 
   /availability:
     get:
+      summary: Retrieves availabilities within a specific date range (US-04)
       operationId: listAvailability
       parameters:
         - in: query
           name: instructorId
           required: true
-          schema: { type: string }
+          schema: { type: string, example: "inst_123" }
+        - in: query
+          name: from
+          required: false
+          schema: { type: string, format: date-time, example: "2026-11-01T09:00:00Z" }
+        - in: query
+          name: to
+          required: false
+          schema: { type: string, format: date-time, example: "2026-11-07T17:00:00Z" }
       responses:
         '200':
-          description: Matching availability slots
+          description: Matching available slots
           content:
             application/json:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Availability' }
     post:
+      summary: Instructor adds new availability
       operationId: addAvailability
       requestBody:
         required: true
@@ -70,10 +109,12 @@ paths:
         '201':
           description: Availability added
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
 
   /appointments:
     post:
+      summary: Creates a new appointment (Student ID taken from token)
       operationId: createAppointment
       requestBody:
         required: true
@@ -89,66 +130,79 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '409':
-          description: Requested interval conflicts with an active reservation
+          description: Selected slot is already booked
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     NewUser:
       type: object
       required: [name, email, role]
       properties:
-        name: { type: string }
-        email: { type: string, format: email }
-        role: { type: string, enum: [INSTRUCTOR, STUDENT] }
+        name: { type: string, example: "Eren Okat" }
+        email: { type: string, format: email, example: "eren@example.com" }
+        role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT], example: "STUDENT" }
+    Assignment:
+      type: object
+      required: [studentId, instructorId]
+      properties:
+        studentId: { type: string, example: "stu_456" }
+        instructorId: { type: string, example: "inst_123" }
     Availability:
       type: object
       required: [id, instructorId, startTime, endTime]
       properties:
-        id: { type: string }
-        instructorId: { type: string }
-        startTime: { type: string, format: date-time }
-        endTime: { type: string, format: date-time }
+        id: { type: string, example: "avail_789" }
+        instructorId: { type: string, example: "inst_123" }
+        startTime: { type: string, format: date-time, example: "2026-11-01T10:00:00Z" }
+        endTime: { type: string, format: date-time, example: "2026-11-01T11:00:00Z" }
     NewAvailability:
       type: object
       required: [startTime, endTime]
       properties:
-        startTime: { type: string, format: date-time }
-        endTime: { type: string, format: date-time }
+        startTime: { type: string, format: date-time, example: "2026-11-01T10:00:00Z" }
+        endTime: { type: string, format: date-time, example: "2026-11-01T11:00:00Z" }
     NewAppointment:
       type: object
-      required: [availabilityId, studentId]
+      required: [availabilityId]
       properties:
-        availabilityId: { type: string }
-        studentId: { type: string }
+        availabilityId: { type: string, example: "avail_789" }
     Appointment:
       allOf:
         - $ref: '#/components/schemas/NewAppointment'
         - type: object
-          required: [id, status]
+          required: [id, status, studentId]
           properties:
-            id: { type: string }
+            id: { type: string, example: "apt_321" }
+            studentId: { type: string, example: "stu_456" }
             status:
               type: string
               enum: [SCHEDULED, CANCELLED, COMPLETED]
+              example: "SCHEDULED"
     Problem:
       type: object
       required: [title, status, code]
       properties:
-        title: { type: string }
-        status: { type: integer }
-        code: { type: string, example: SLOT_UNAVAILABLE }
-        detail: { type: string }
+        title: { type: string, example: "Conflict" }
+        status: { type: integer, example: 409 }
+        code: { type: string, example: "SLOT_UNAVAILABLE" }
+        detail: { type: string, example: "This slot is already booked or email is in use." }
 
   responses:
     BadRequest:
-      description: Invalid request
+      description: Missing or invalid request parameters
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }
     Unauthorized:
-      description: Missing or invalid authentication
+      description: Missing or invalid token (Not logged in)
     Forbidden:
-      description: Subject lacks permission (e.g., student attempting admin action)
+      description: "Insufficient permission (e.g., Student trying to assign an instructor)"

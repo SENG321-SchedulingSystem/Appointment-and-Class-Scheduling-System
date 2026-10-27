@@ -73,15 +73,17 @@ Run on 24 October 2026 against `openapi.yaml` **v0.2.0** on `develop`.
 | Book a free slot | US-05 | `POST /appointments` | `201` with an `Appointment` body (`status: SCHEDULED`) |
 | Double booking | US-05 | `POST /appointments` with `Prefer: code=409` | `409` with `code: SLOT_UNAVAILABLE` |
 | Book without logging in | US-05 | `POST /appointments` without token | `401` |
+| Unauthorized booking attempt | US-05 | `POST /appointments` with `Prefer: code=403` | `403` with `code: INSTRUCTOR_NOT_ASSIGNED` |
+| Nonexistent slot booking | US-05 | `POST /appointments` with `Prefer: code=404` | `404` with `code: SLOT_NOT_FOUND` |
 
 ### 7. Contract Change Rules
 1. Any change to `openapi.yaml` starts with a GitHub issue describing the reason.
 2. The architect approves the change in a pull request. Integration and QA are consulted.
-3. `info.version` is increased for every merged change (e.g., `0.1.0` → `0.2.0`).
+3. `info.version` is increased for every merged change (e.g., `0.1.0` → `0.2.0` → `0.2.1`).
 4. Frontend, backend, and tests are updated only after the contract change is merged into `develop`.
 
 ### 8. Contract Review Log
-Points found while integrating the mock server with v0.1.0, and their status:
+Points found while integrating the mock server with v0.1.0 and subsequent architectural reviews, and their status:
 
 | Point | Status |
 | :--- | :--- |
@@ -90,4 +92,5 @@ Points found while integrating the mock server with v0.1.0, and their status:
 | `GET /availability` had no `from` / `to` parameters (US-04) | Resolved in v0.2.0 |
 | No `servers`, `securitySchemes`, or `example` values | Resolved in v0.2.0 |
 | `studentId` was sent in the request body of `POST /appointments` | Resolved in v0.2.0 (taken from the token) |
-| Duplicate email and occupied slot share the example error code `SLOT_UNAVAILABLE` | Open, proposed for Sprint 2 (e.g., a separate `EMAIL_ALREADY_EXISTS` code) |
+| Duplicate email and occupied slot share the example error code `SLOT_UNAVAILABLE` | Resolved in v0.2.0 (PR #26, added `EMAIL_ALREADY_EXISTS`) |
+| Missing 400/401/403 on `GET /availability` and 403/404 on `POST /appointments` | Resolved in v0.2.1 (Issue #30) |

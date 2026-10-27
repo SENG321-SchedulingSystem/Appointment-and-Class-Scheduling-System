@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Lesson Scheduling API
-  version: 0.2.0
+  version: 0.2.1
   description: API contract for managing users, instructor availability, and lesson appointments.
 servers:
   - url: http://localhost:3000
@@ -103,6 +103,9 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Availability' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
     post:
       summary: Instructor adds new availability
       operationId: addAvailability
@@ -135,6 +138,26 @@ paths:
               schema: { $ref: '#/components/schemas/Appointment' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: Student is not assigned to this instructor or lacks permission
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Forbidden"
+                status: 403
+                code: "INSTRUCTOR_NOT_ASSIGNED"
+                detail: "You are not authorized to book an appointment with an instructor who is not assigned to you."
+        '404':
+          description: Requested availability slot not found
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Not Found"
+                status: 404
+                code: "SLOT_NOT_FOUND"
+                detail: "The requested availability slot does not exist in the system."
         '409':
           description: Selected slot is already booked
           content:

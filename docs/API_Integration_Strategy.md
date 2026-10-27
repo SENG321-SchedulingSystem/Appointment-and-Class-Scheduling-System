@@ -64,7 +64,7 @@ Run on 27 October 2026 against `openapi.yaml` **v0.2.1** on `develop`.
 
 | Check | Story | Request | Result |
 | :--- | :--- | :--- | :--- |
-| Contract structure | - | `redocly lint` | Valid (0 errors, 0 warnings) |
+| Contract structure | - | `redocly lint` | Valid (0 errors, 1 warning: localhost mock server, expected) |
 | Login | - | `POST /auth/login` | `200` with `token` and `role` |
 | Create a user | US-01 | `POST /users` | `201` |
 | Create user without token | US-01 | `POST /users` without token | `401` with `code: UNAUTHORIZED` |

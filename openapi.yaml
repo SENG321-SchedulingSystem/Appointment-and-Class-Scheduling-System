@@ -1,8 +1,11 @@
 openapi: 3.1.0
 info:
   title: Lesson Scheduling API
-  version: 0.2.0
+  version: 0.2.1
   description: API contract for managing users, instructor availability, and lesson appointments.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 servers:
   - url: http://localhost:3000
     description: Mock Development Server
@@ -50,6 +53,7 @@ paths:
         '201':
           description: User successfully created
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '409':
           description: Email address is already in use (US-01)
@@ -75,6 +79,7 @@ paths:
         '201':
           description: Assignment successful
         '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
 
@@ -103,6 +108,19 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Availability' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: Student is not assigned to this instructor or lacks permission
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Forbidden"
+                status: 403
+                code: "INSTRUCTOR_NOT_ASSIGNED"
+                detail: "You are not authorized to view the availability of an instructor who is not assigned to you."
+        '404': { $ref: '#/components/responses/NotFound' }
     post:
       summary: Instructor adds new availability
       operationId: addAvailability
@@ -135,6 +153,26 @@ paths:
               schema: { $ref: '#/components/schemas/Appointment' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: Student is not assigned to this instructor or lacks permission
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Forbidden"
+                status: 403
+                code: "INSTRUCTOR_NOT_ASSIGNED"
+                detail: "You are not authorized to book an appointment with an instructor who is not assigned to you."
+        '404':
+          description: Requested availability slot not found
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Not Found"
+                status: 404
+                code: "SLOT_NOT_FOUND"
+                detail: "The requested availability slot does not exist in the system."
         '409':
           description: Selected slot is already booked
           content:
@@ -215,8 +253,24 @@ components:
           schema: { $ref: '#/components/schemas/Problem' }
     Unauthorized:
       description: Missing or invalid token (Not logged in)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+          example:
+            title: "Unauthorized"
+            status: 401
+            code: "UNAUTHORIZED"
+            detail: "Authentication credentials are missing or invalid."
     Forbidden:
-      description: "Insufficient permission (e.g., Student trying to assign an instructor)"
+      description: Insufficient permission to perform this action
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+          example:
+            title: "Forbidden"
+            status: 403
+            code: "FORBIDDEN"
+            detail: "You do not have permission to access this resource."
     NotFound:
       description: Requested resource not found
       content:

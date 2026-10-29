@@ -1,0 +1,37 @@
+name: 📌 Feature / Task
+description: Create a new feature or task for the project.
+title: "[Task]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 📌 Purpose / Description
+      description: Clear and concise description of the feature or task.
+    validations:
+      required: true
+
+  - type: input
+    id: owner
+    attributes:
+      label: 👤 Owner
+      description: Who is the primary owner/assignee of this issue?
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 🔗 Related User Story / API Impact
+      description: Which user story does this relate to? Does it affect openapi.yaml?
+
+  - type: textarea
+    id: acceptance-evidence
+    attributes:
+      label: 📋 Acceptance Evidence (DoD)
+      description: Definition of Done. What evidence is required to close this?
+      value: |
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true

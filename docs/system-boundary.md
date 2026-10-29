@@ -73,7 +73,7 @@ The following capabilities are deliberately excluded from the MVP scope to maint
 ## 4. System Constraints & Assumptions
 
 ### Constraints
-- **Architectural Constraint (API-First):** All client-server communication must strictly conform to `openapi.yaml` (v0.2.0); backend endpoints and client services cannot deviate from the defined schema.
+- **Architectural Constraint (API-First):** All client-server communication must strictly conform to `openapi.yaml` (v0.2.1); backend endpoints and client services cannot deviate from the defined schema.
 - **Security Constraint:** Except for `POST /auth/login`, all routes require a valid Bearer JWT. User roles must be validated on every backend transaction.
 - **Temporal Constraint:** All timestamps must be represented in ISO 8601 UTC format (`YYYY-MM-DDTHH:mm:ssZ`) to prevent timezone inconsistencies across clients.
 - **Platform Constraint:** The initial release targets responsive modern web desktop and mobile browsers; native mobile wrappers are not supported.

@@ -1,5 +1,5 @@
 # Software Requirements & Foundation Specification
-**Course:** SENG 321 – Software Engineering Project 1]  
+**Course:** SENG 321 – Software Engineering Project
 **Project:** Appointment and Class Scheduling System  
 **Current Milestone:** Sprint 1 Deliverables (Consolidated Specification)  
 
@@ -124,7 +124,7 @@ graph TD
 - File uploading, past lesson material storage, and homework assignment tracking.
 
 ### 3.4 Constraints & Assumptions
-- **Architectural Constraint:** Strict API-first development conforming to `openapi.yaml` (v0.2.0).
+- **Architectural Constraint:** Strict API-first development conforming to `openapi.yaml` (v0.2.1).
 - **Security Constraint:** Global Bearer JWT authentication required for all routes except `POST /auth/login`.
 - **Temporal Constraint:** All timestamps must use standard ISO 8601 UTC format.
 - **Assumptions:** Users maintain active internet connectivity; users are provisioned by Admin before entering operational flows.
@@ -142,7 +142,7 @@ graph TD
 | Priority | ID | Issue | Epic | User Story | Acceptance Criteria | Estimate (SP) | Dependencies | Assigned Owner |
 | :---: | :---: | :---: | :--- | :--- | :--- | :---: | :--- | :--- |
 | **1** | **US-01** | #19 | Epic 1: Identity & Provisioning | As an **Admin**, I want to add new instructors and students to the system so that I can manage authorized users. | • User account is successfully created with valid parameters.<br>• Duplicate registrations with existing emails return `409 Conflict` (`EMAIL_ALREADY_EXISTS`). | **5** | None (Root Story) | Furkan Çelebi (@furkancelebi06) |
-| **2** | **US-02** | #20 | Epic 1: Identity & Provisioning | As an **Admin**, I want to assign a student to a specific instructor so that I can establish authorization for taking lessons. | • The assignment relation is persisted in the database.<br>• Attempts with invalid, nonexistent, or unauthorized user IDs return `404 Not Found`. | **3** | US-01 | Furkan Çelebi (@furkancelebi06) |
+| **2** | **US-02** | #20 | Epic 1: Identity & Provisioning | As an **Admin**, I want to assign a student to a specific instructor so that I can establish authorization for taking lessons. | • The assignment relation is persisted in the database (`201 Created`).<br>• Missing/invalid request fields return `400 Bad Request`.<br>• Requests from unauthorized/non-admin roles return `403 Forbidden`.<br>• Attempts with nonexistent user IDs return `404 Not Found`. | **3** | US-01 | Furkan Çelebi (@furkancelebi06) |
 | **3** | **US-03** | #21 | Epic 2: Availability & Booking | As an **Instructor**, I want to add my available teaching hours to the system so that my students can book appointments with me. | • Forward-looking time slots are added successfully returning `201 Created`.<br>• Slot entries for past dates or invalid chronological order return `400 Bad Request`. | **5** | US-01 | Eren Okat (@erenokt3) |
 | **4** | **US-04** | #22 | Epic 2: Availability & Booking | As a **Student**, I want to view the available lesson hours of my assigned instructor so that I can plan an appointment for a suitable time. | • Returns an empty list or informational indicator if no slots exist.<br>• Boundary date/time query parameters (`from`, `to`) filter records deterministically. | **3** | US-02, US-03 | Furkan Çelebi (@furkancelebi06) |
 | **5** | **US-05** | #23 | Epic 2: Availability & Booking | As a **Student**, I want to book an appointment for an available slot of my instructor so that I can complete my lesson reservation. | • Successful reservation locks the slot and returns `201 Created`.<br>• Race conditions or attempts on occupied slots return `409 Conflict` (`SLOT_UNAVAILABLE`) via atomic transactions. | **8** | US-02, US-03, US-04 | Eren Okat (@erenokt3) |

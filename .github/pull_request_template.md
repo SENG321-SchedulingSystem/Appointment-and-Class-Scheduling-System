@@ -1,10 +1,10 @@
-## 📝 Yapılan Değişiklikler
-- Lütfen yaptığınız değişiklikleri buraya kısaca yazın.
-- Hangi Issue çözüldü? (Örn: Resolves #12)
+## 📝 Changes Made
+- Briefly describe the changes you made here.
+- Which Issue is resolved? (e.g., Resolves #12)
 
-## ✅ Kontrol Listesi (Checklist)
-Lütfen PR açmadan önce aşağıdaki maddeleri kontrol edin:
-- [ ] Kodum `main` değil, `develop` dalına hedeflenerek açıldı.
-- [ ] Kodum yerelde test edildi ve başarıyla çalışıyor.
-- [ ] Yeni eklenen özellikler için README veya Swagger güncellendi.
-- [ ] RACI veya Sprint kurallarına aykırı bir durum yoktur.
+## ✅ Checklist
+Please check the following before opening a PR:
+- [ ] My code targets the `develop` branch, not `main`.
+- [ ] My code has been tested locally and works successfully.
+- [ ] README or Swagger has been updated for newly added features.
+- [ ] There is no violation of RACI or Sprint rules.

@@ -219,15 +219,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# ---------------------------------------------------
-# Additional Technologies & Editor Configurations
-# ---------------------------------------------------
-
-# React / Node.js (JS)
+# React / Node.js
 node_modules/
 npm-debug.log*
 yarn-error.log*
-# Note: build/ and dist/ are handled in the Python section above
 
 # PHP / Composer
 vendor/

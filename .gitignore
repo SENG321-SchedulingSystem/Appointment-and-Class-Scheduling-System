@@ -191,7 +191,7 @@ cython_debug/
 # .idea/
 
 # Abstra
-#   Abstra is an AI-powered process automation framework.
+#   Abstra is a process automation framework.
 #   Ignore directories containing user credentials, local state, and settings.
 #   Learn more at https://abstra.io/docs
 .abstra/
@@ -220,19 +220,19 @@ __marimo__/
 .streamlit/secrets.toml
 
 # ---------------------------------------------------
-# DİĞER TEKNOLOJİLER VE EDİTÖR AYARLARI (Sonradan Eklenenler)
+# Additional Technologies & Editor Configurations
 # ---------------------------------------------------
 
 # React / Node.js (JS)
 node_modules/
 npm-debug.log*
 yarn-error.log*
-# (Not: build/ ve dist/ Python kısmında zaten olduğu için buraya eklenmedi)
+# Note: build/ and dist/ are handled in the Python section above
 
 # PHP / Composer
 vendor/
 
-# IDE & İşletim Sistemi
+# IDE & Operating System
 .vscode/
 .idea/
 .DS_Store

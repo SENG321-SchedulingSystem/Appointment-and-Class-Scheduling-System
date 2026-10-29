@@ -33,15 +33,15 @@ Stories refer to the backlog issues (US-01 = #19 ... US-05 = #23). Endpoints and
 | US-01 (#19) | Register with an already registered email | POST /users | 409 (code: EMAIL_ALREADY_EXISTS) |
 | US-01 (#19) | Invalid or missing fields | POST /users | 400 |
 | US-01 (#19) | Create a user without a token | POST /users | 401 (code: UNAUTHORIZED) |
-| US-01 (#19) | Non-admin user tries to create a user | POST /users | 403 |
+| US-01 (#19) | Non-admin user tries to create a user | POST /users | 403 (code: FORBIDDEN) |
 | US-02 (#20) | Admin assigns a student to an instructor | POST /assignments | 201 |
 | US-02 (#20) | Assign a student without a token | POST /assignments | 401 (code: UNAUTHORIZED) |
-| US-02 (#20) | Non-admin user tries to assign | POST /assignments | 403 |
+| US-02 (#20) | Non-admin user tries to assign | POST /assignments | 403 (code: FORBIDDEN) |
 | US-02 (#20) | Assign a nonexistent user | POST /assignments | 404 (code: RESOURCE_NOT_FOUND) |
 | US-03 (#21) | Instructor adds a valid future time slot | POST /availability | 201 |
 | US-03 (#21) | Instructor adds availability in the past | POST /availability | 400 |
-| US-03 (#21) | Add availability without a token | POST /availability | 401 |
-| US-03 (#21) | Non-instructor tries to add availability | POST /availability | 403 |
+| US-03 (#21) | Add availability without a token | POST /availability | 401 (code: UNAUTHORIZED) |
+| US-03 (#21) | Non-instructor tries to add availability | POST /availability | 403 (code: FORBIDDEN) |
 | US-04 (#22) | Instructor has no availability | GET /availability | 200 + [] |
 | US-04 (#22) | Boundary date/time filtering (from/to) | GET /availability | 200, only slots inside the range |
 | US-04 (#22) | Missing required instructorId | GET /availability | 400 |
@@ -51,7 +51,7 @@ Stories refer to the backlog issues (US-01 = #19 ... US-05 = #23). Endpoints and
 | US-05 (#23) | Book a free slot | POST /appointments | 201 |
 | US-05 (#23) | Book an occupied slot | POST /appointments | 409 (code: SLOT_UNAVAILABLE) |
 | US-05 (#23) | Two students book the same slot concurrently | POST /appointments | one 201, one 409 |
-| US-05 (#23) | Book without logging in | POST /appointments | 401 |
+| US-05 (#23) | Book without logging in | POST /appointments | 401 (code: UNAUTHORIZED) |
 | US-05 (#23) | Missing availabilityId | POST /appointments | 400 |
 | US-05 (#23) | Book a slot of an instructor not assigned to the student | POST /appointments | 403 (code: INSTRUCTOR_NOT_ASSIGNED) |
 | US-05 (#23) | Nonexistent availabilityId | POST /appointments | 404 (code: SLOT_NOT_FOUND) |

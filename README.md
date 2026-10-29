@@ -57,6 +57,6 @@ For the detailed responsibility distribution, see the [RACI Matrix](docs/RACI_Ma
 This project is licensed under the [MIT License](LICENSE). The rationale is given in the [Project Proposal](docs/project-proposal.md).
 
 ## Sprint 1 Submission
-* **Release Tag:** `sprint-1` (pending)
-* **Pull Request:** *(Link will be added upon merging)*
+* **Release Tag:** `sprint-1`
+* **Pull Request:** Check the merged pull requests for the `develop` to `main` Sprint 1 release.
 * **Project Board (Issues):** [SENG 321 Project Board](https://github.com/orgs/SENG321-SchedulingSystem/projects/2)

@@ -59,4 +59,4 @@ This project is licensed under the [MIT License](LICENSE). The rationale is give
 ## Sprint 1 Submission
 * **Release Tag:** `sprint-1` (pending)
 * **Pull Request:** *(Link will be added upon merging)*
-* **Project Board (Issues):** [SENG 321 Project Board](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/projects/1)
+* **Project Board (Issues):** [SENG 321 Project Board](https://github.com/orgs/SENG321-SchedulingSystem/projects/2)

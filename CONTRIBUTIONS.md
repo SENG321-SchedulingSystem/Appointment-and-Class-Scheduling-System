@@ -31,7 +31,7 @@ This document serves as the formal individual contributions record for **Team 4*
 - **Pull Requests (Authored & Merged):**
   - [PR #17](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/17): `docs: Sprint 1 - Core Requirements, Vision, and Initial Backlog`
   - [PR #33](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/33): `docs: enrich sprint 1 requirements, proposal, and product backlog`
-- **Peer Review Activity:** Reviewed and approved PR #31 (OpenAPI Architecture v0.2.1) and PR #34 (Sprint 1 Retrospective).
+- **Peer Review Activity:** Reviewed and approved PR #42 (Sprint 1 Release).
 
 ---
 
@@ -51,16 +51,17 @@ This document serves as the formal individual contributions record for **Team 4*
   - [Issue #44](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/44): `Chore: Translate CI workflow steps and gitignore comments to English` (Author)
   - Assigned User Stories: [US-03 (#21)](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/21) & [US-05 (#23)](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/23)
 - **Pull Requests (Authored & Merged):**
-  - [PR #2](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/2): `Revise README with project details and system vision`
-  - [PR #3](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/3): `Add OpenAPI specification for Lesson Scheduling API`
   - [PR #5](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/5): `Add OpenAPI spec and update README`
-  - [PR #10](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/10): `Feature/readme ve api`
   - [PR #11](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/11): `Fix: Update system boundary diagram to include Admin`
   - [PR #26](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/26): `Fix: Add 404 response and EMAIL_ALREADY_EXISTS code`
   - [PR #31](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/31): `Architecture: Complete authorization and error responses in OpenAPI contract (v0.2.1)`
   - [PR #45](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/45): `Chore: Translate workflow steps and gitignore comments to English`
   - [PR #46](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/46): `Chore: Clean up redundant comment lines in .gitignore`
-- **Peer Review Activity:** Reviewed and approved PR #37 (Prism Mock Verification), PR #28 (QA Strategy), PR #16 (CI Pipeline), and PR #42 (Sprint 1 Release).
+- **Pull Requests (Authored, Closed without Merge):**
+  - [PR #2](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/2): `Revise README with project details and system vision`
+  - [PR #3](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/3): `Add OpenAPI specification for Lesson Scheduling API`
+  - [PR #10](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/10): `Feature/readme ve api`
+- **Peer Review Activity:** Reviewed and approved PR #9, #28, #29, #33, #34, #37, #43, #47.
 
 ---
 
@@ -70,7 +71,7 @@ This document serves as the formal individual contributions record for **Team 4*
 - **Assigned Role:** Implementation & Integration Engineer
 - **Primary Responsibilities:**
   - Establishing the contract mocking environment using Stoplight Prism.
-  - Authoring `docs/API_Integration_Strategy.md` detailing frontend consumption patterns and Axios interceptors.
+  - Authoring `docs/API_Integration_Strategy.md` detailing environments, the contract-change workflow, and mock server verification.
   - Executing and validating all 31 mock test scenarios across auth, users, availability, and appointment booking.
   - Verifying error responses and RFC 7807 problem payloads against the mock server.
 - **Assigned & Authored Issues:**
@@ -81,7 +82,7 @@ This document serves as the formal individual contributions record for **Team 4*
   - [PR #9](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/9): `Add API integration strategy and mock server evidence`
   - [PR #14](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/14): `Update API integration strategy for contract v0.2.0`
   - [PR #37](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/37): `docs(api): re-verify mock server against openapi v0.2.1`
-- **Peer Review Activity:** Reviewed and approved PR #31 (OpenAPI Contract v0.2.1) and PR #33 (Requirements Refinement).
+- **Peer Review Activity:** Reviewed and approved PR #1, #7, #15, #16, #31, #33, #36, #39, #41.
 
 ---
 
@@ -98,12 +99,13 @@ This document serves as the formal individual contributions record for **Team 4*
   - [Issue #24](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/24): `Update README with documentation map and team rules` (Author & Assignee)
   - [Issue #32](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/32): `[Scrum] Sprint 1 Retrospective and Project Board Link` (Author & Assignee)
 - **Pull Requests (Authored & Merged):**
-  - [PR #4](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/4): `Add RACI Matrix for Sprint 1 roles and responsibilities`
   - [PR #6](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/6): `Add RACI matrix documentation`
   - [PR #7](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/7): `Add RACI matrix directly to README`
   - [PR #29](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/29): `docs: apply final review corrections for roles, vision, and Git-Flow`
   - [PR #34](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/34): `docs: add sprint 1 retrospective and link project board`
-- **Peer Review Activity:** Reviewed and approved PR #17 (Core Requirements & Backlog) and PR #42 (Sprint 1 Release).
+- **Pull Requests (Authored, Closed without Merge):**
+  - [PR #4](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/4): `Add RACI Matrix for Sprint 1 roles and responsibilities`
+- **Peer Review Activity:** Reviewed and approved PR #14, #17.
 
 ---
 
@@ -117,12 +119,12 @@ This document serves as the formal individual contributions record for **Team 4*
   - Defining acceptance criteria test suites, including RFC 7807 error validation (400, 401, 403, 404, 409).
   - Verifying contract compliance against business rules and boundary constraints.
 - **Assigned & Authored Issues:**
-  - [Issue #27](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/27): `Add docs/QA_Strategy.md and Test Traceability Matrix for Sprint 1` (Author & Assignee)
+  - [Issue #27](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/27): `Add docs/QA_Strategy.md and Test Traceability Matrix for Sprint 1` (Author)
   - [Issue #35](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/35): `Update QA traceability matrix for openapi v0.2.1 (401/403/404 cases)` (Author & Assignee)
 - **Pull Requests (Authored & Merged):**
   - [PR #28](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/28): `Add QA strategy with story-to-test traceability (#27)`
   - [PR #36](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/36): `Update QA traceability matrix for openapi v0.2.1 (#35)`
-- **Peer Review Activity:** Reviewed and approved PR #26 (404 response updates) and PR #31 (OpenAPI Contract Architecture).
+- **Peer Review Activity:** Reviewed and approved PR #11, #26.
 
 ---
 
@@ -132,7 +134,7 @@ This document serves as the formal individual contributions record for **Team 4*
 - **Assigned Role:** DevOps & CI/CD Infrastructure Engineer
 - **Primary Responsibilities:**
   - Managing repository governance, branching model (Git-Flow: `main`, `develop`, feature branches), and branch protection rules.
-  - Implementing automated GitHub Actions Continuous Integration (`.github/workflows/lint-openapi.yml`) with Redocly CLI.
+  - Implementing automated GitHub Actions Continuous Integration (`.github/workflows/openapi-lint.yml`) with Redocly CLI.
   - Designing GitHub Issue Form templates (`.github/ISSUE_TEMPLATE/`) and Pull Request template (`.github/pull_request_template.md`).
   - Executing the Sprint 1 production release merge and generating the immutable release tag `sprint-1`.
 - **Assigned & Authored Issues:**
@@ -142,22 +144,25 @@ This document serves as the formal individual contributions record for **Team 4*
   - [PR #15](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/15): `DevOps: Issue and PR templates added`
   - [PR #16](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/16): `DevOps: CI added for OpenAPI lint checks`
   - [PR #39](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/39): `DevOps: The issue template has been updated to GitHub's new form system (YAML)`
-  - [PR #40](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/40): `Docs/update readme sprint1`
   - [PR #41](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/41): `Docs: Update Sprint 1 submission details`
   - [PR #42](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/42): `Release: Sprint 1 Delivery`
   - [PR #43](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/43): `Chore: Translate pull request template to English`
   - [PR #47](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/47): `Hotfix: PR template translation`
-- **Peer Review Activity:** Reviewed and approved PR #31 (OpenAPI Contract Architecture) and PR #45 (CI English Translation).
+- **Pull Requests (Authored, Closed without Merge):**
+  - [PR #40](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/40): `Docs/update readme sprint1`
+- **Peer Review Activity:** Reviewed and approved PR #5, #6, #14, #45, #46.
 
 ---
 
 ## Contribution Summary Matrix
 
 | Member | Student ID | Role | Commits | Pull Requests Authored | Issues Authored / Assigned | Key Sprint 1 Artifacts |
-|:---|:---:|:---|:---:|:---:|:---:|:---|
+|:---|:---:|:---|:---:|:---|:---:|:---|
 | **Miraç Burak Esentürk** | 230205001 | Product Owner | 5 | #17, #33 | #18, #19, #20, #21, #22, #23 | `project-proposal.md`, `system-vision.md`, `product-backlog.md` |
-| **Eren Okat** | 230204008 | Lead Architect | 16 | #2, #3, #5, #10, #11, #26, #31, #45, #46 | #12, #25, #30, #44, US-03, US-05 | `openapi.yaml` (v0.2.1), `system-boundary.md` |
+| **Eren Okat** | 230204008 | Lead Architect | 16 | #5, #11, #26, #31, #45, #46<br/>*(Closed without merge: #2, #3, #10)* | #12, #25, #30, #44, US-03, US-05 | `openapi.yaml` (v0.2.1), `system-boundary.md` |
 | **Furkan Çelebi** | 230204301 | Integration Eng. | 9 | #9, #14, #37 | #8, #13, US-01, US-02, US-04 | `API_Integration_Strategy.md`, Prism Validation (31 Tests) |
-| **Ayşe Nida Yalçınkaya** | 230204063 | Scrum Master | 6 | #4, #6, #7, #29, #34 | #24, #32 | `RACI_Matrix.md`, `sprint-1-retrospective.md`, Project Board |
+| **Ayşe Nida Yalçınkaya** | 230204063 | Scrum Master | 6 | #6, #7, #29, #34<br/>*(Closed without merge: #4)* | #24, #32 | `RACI_Matrix.md`, `sprint-1-retrospective.md`, Project Board |
 | **Merve Öksüz** | 230204051 | QA Engineer | 5 | #28, #36 | #27, #35 | `QA_Strategy.md`, Traceability Matrix, RFC 7807 Cases |
-| **Şükrü Kağan Demir** | 230201027 | DevOps Engineer | 17 | #1, #15, #16, #39, #40, #41, #42, #43, #47 | #38 | CI Workflow, Branch Protection, Issue/PR Forms, Release `sprint-1` |
+| **Şükrü Kağan Demir** | 230201027 | DevOps Engineer | 17 | #1, #15, #16, #39, #41, #42, #43, #47<br/>*(Closed without merge: #40)* | #38 | CI Workflow, Branch Protection, Issue/PR Forms, Release `sprint-1` |
+
+*\* Note: Closed without merge PRs represent initial draft submissions that were subsequently superseded and consolidated into structured branch PRs.*

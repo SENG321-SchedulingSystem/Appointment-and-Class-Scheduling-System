@@ -21,6 +21,19 @@ This document defines the roles and responsibilities of the team members for Spr
 | **Core Code Implementation & Integration** | I | A | R | I | C | C |
 | **Agile Process & Sprint Facilitation** | C | I | I | R/A | C | I |
 
+### Sprint 2 RACI Matrix (Requirements & Architecture)
+
+| Sprint 2 Deliverable | Miraç (PO) | Eren (Architect) | Furkan (Implementation) | Nida (Scrum Master) | Merve (QA) | Kağan (DevOps) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Software Requirements Specification & Refined Backlog** | R/A | C | I | C | C | I |
+| **C4 Architecture Models & ADRs** | I | R/A | C | I | I | C |
+| **UML Sequence & Domain/Class Diagrams** | C | A | R | I | I | I |
+| **Non-Functional Requirements & Quality Measures** | C | C | I | I | R/A | C |
+| **Figma UI/UX Prototypes & User-Flow Diagrams** | C | C | C | R/A | I | I |
+| **Deployment Diagram & CI Extension** | I | C | I | I | I | R/A |
+| **Sprint Tracking, RACI & Retrospective** | C | I | I | R/A | C | I |
+| **Sprint 2 Release & Tag** | I | C | I | C | I | R/A |
+
 ### Legend
 * **R (Responsible):** The person who actually does the work to complete the task.
 * **A (Accountable):** The person who is ultimately answerable for the correct completion of the deliverable.

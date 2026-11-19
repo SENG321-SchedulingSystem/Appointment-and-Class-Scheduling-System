@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Lesson Scheduling API
-  version: 0.2.1
+  version: 0.3.0
   description: API contract for managing users, instructor availability, and lesson appointments.
   license:
     name: MIT
@@ -41,6 +41,28 @@ paths:
         '401': { $ref: '#/components/responses/Unauthorized' }
 
   /users:
+    get:
+      summary: Retrieves users filtered by role (e.g. for student-instructor pairing)
+      operationId: listUsers
+      parameters:
+        - in: query
+          name: role
+          required: false
+          schema:
+            type: string
+            enum: [ADMIN, INSTRUCTOR, STUDENT]
+            example: INSTRUCTOR
+      responses:
+        '200':
+          description: List of matching users
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/User' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
     post:
       summary: Creates a new user (Registration)
       operationId: createUser
@@ -86,6 +108,7 @@ paths:
   /availability:
     get:
       summary: Retrieves availabilities within a specific date range (US-04)
+      description: Instructors can query their own availability slots without assignment restrictions; students can only view available slots of their assigned instructor.
       operationId: listAvailability
       parameters:
         - in: query
@@ -135,6 +158,53 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+
+  /availability/{id}:
+    delete:
+      summary: Deletes an unbooked availability slot (FR-06)
+      description: Allows an instructor to delete an availability slot that has not yet been booked by a student.
+      operationId: deleteAvailability
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Unique identifier of the availability slot to delete
+          schema: { type: string, example: "avail_789" }
+      responses:
+        '204':
+          description: Availability slot successfully deleted
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: Caller is not authorized to delete this availability slot
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Forbidden"
+                status: 403
+                code: "FORBIDDEN"
+                detail: "You do not have permission to delete this availability slot."
+        '404':
+          description: Availability slot not found
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Not Found"
+                status: 404
+                code: "SLOT_NOT_FOUND"
+                detail: "The requested availability slot does not exist in the system."
+        '409':
+          description: Slot is already booked and cannot be deleted
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+              example:
+                title: "Conflict"
+                status: 409
+                code: "SLOT_ALREADY_BOOKED"
+                detail: "Cannot delete availability slot because an appointment has already been booked for this slot."
 
   /appointments:
     post:
@@ -192,12 +262,21 @@ components:
       bearerFormat: JWT
 
   schemas:
+    User:
+      type: object
+      required: [id, name, email, role]
+      properties:
+        id: { type: string, example: "usr_123" }
+        name: { type: string, example: "Eren Okat" }
+        email: { type: string, format: email, example: "eren@example.com" }
+        role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT], example: "INSTRUCTOR" }
     NewUser:
       type: object
       required: [name, email, role]
       properties:
         name: { type: string, example: "Eren Okat" }
         email: { type: string, format: email, example: "eren@example.com" }
+        password: { type: string, example: "password123" }
         role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT], example: "STUDENT" }
     Assignment:
       type: object

@@ -34,8 +34,11 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [token, userId, role]
                 properties:
                   token: { type: string, example: "eyJhbGciOiJIUzI1NiIsInR5c..." }
+                  userId: { type: string, example: "usr_123" }
+                  name: { type: string, example: "Eren Okat" }
                   role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT], example: "STUDENT" }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
@@ -113,7 +116,8 @@ paths:
       parameters:
         - in: query
           name: instructorId
-          required: true
+          required: false
+          description: Target instructor ID. Optional; if omitted, the backend defaults to the authenticated user's ID for instructors, or the assigned instructor's ID for students.
           schema: { type: string, example: "inst_123" }
         - in: query
           name: from
@@ -155,6 +159,9 @@ paths:
       responses:
         '201':
           description: Availability added
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Availability' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
@@ -272,7 +279,7 @@ components:
         role: { type: string, enum: [ADMIN, INSTRUCTOR, STUDENT], example: "INSTRUCTOR" }
     NewUser:
       type: object
-      required: [name, email, role]
+      required: [name, email, password, role]
       properties:
         name: { type: string, example: "Eren Okat" }
         email: { type: string, format: email, example: "eren@example.com" }
@@ -286,12 +293,16 @@ components:
         instructorId: { type: string, example: "inst_123" }
     Availability:
       type: object
-      required: [id, instructorId, startTime, endTime]
+      required: [id, instructorId, startTime, endTime, status]
       properties:
         id: { type: string, example: "avail_789" }
         instructorId: { type: string, example: "inst_123" }
         startTime: { type: string, format: date-time, example: "2026-11-01T10:00:00Z" }
         endTime: { type: string, format: date-time, example: "2026-11-01T11:00:00Z" }
+        status:
+          type: string
+          enum: [AVAILABLE, BOOKED]
+          example: "AVAILABLE"
     NewAvailability:
       type: object
       required: [startTime, endTime]

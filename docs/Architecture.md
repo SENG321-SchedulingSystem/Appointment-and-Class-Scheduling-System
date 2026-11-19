@@ -86,12 +86,18 @@ graph TD
 ```
 
 #### Container Responsibilities & Technology Stack
-| Container | Primary Technology | Protocol / Port | Operational Responsibility |
-|:---|:---|:---|:---|
-| **Frontend SPA** | React 18, TypeScript, Tailwind CSS, Axios | HTTPS (Port 443 / 5173 dev) | Client-side routing, role-based screen rendering, JWT token persistence (in-memory / secure cookie). Zero direct database connection. |
-| **Backend API** | Node.js (v20 LTS), Express.js | HTTPS (Port 3000 / 8080) | Request validation, authentication claims extraction, business rule validation, atomic database transaction coordination. |
-| **Database** | Google Cloud Firestore (Native Mode) | gRPC / TLS (Port 443) | Document storage for `users`, `availabilities`, `appointments`, and `assignments`. Enforces isolated transaction locks. |
-| **Mock Engine** | Stoplight Prism CLI | HTTP (Port 4010) | Validates frontend client requests against `openapi.yaml` schemas during development without requiring a live backend. |
+| Container | Primary Technology | Packaging / Docker Target | Protocol / Port | Operational Responsibility |
+|:---|:---|:---|:---|:---|
+| **Frontend SPA** | React 18, TypeScript, Tailwind CSS, Axios | Docker (`node:20-alpine` build + `nginx:alpine` runner) | HTTPS (Port 443 / 5173 dev / 80 Docker) | Client-side routing, role-based screen rendering, JWT token persistence (in-memory / secure cookie). Zero direct database connection. |
+| **Backend API** | Node.js (v20 LTS), Express.js | Docker (`node:20-alpine` runtime) | HTTPS / HTTP (Port 3000 / 8080) | Request validation, authentication claims extraction, business rule validation, atomic database transaction coordination. |
+| **Database (Cloud)** | Google Cloud Firestore (Native Mode) | Cloud Managed (GCP) | gRPC / TLS (Port 443) | Document storage for `users`, `availabilities`, `appointments`, and `assignments`. Enforces isolated transaction locks in Production/Staging. |
+| **Database (Local Demo)** | Firebase Local Emulator Suite | Docker (`spine3/firebase-emulator` or local CLI) | HTTP / gRPC (Port 8080 Firestore, 9099 Auth) | Fully isolated, zero-credential local persistence container for single-command `docker compose up` grading and demo evaluation. |
+| **Mock Engine** | Stoplight Prism CLI | Docker / CLI | HTTP (Port 4010) | Validates frontend client requests against `openapi.yaml` schemas during development without requiring a live backend. |
+
+#### Local Evaluation & Docker-Compose Architecture
+To fulfill the BM 321 Software Engineering Project rubric requirement for single-command reproducible evaluation (**20% grading weight**):
+- **Reproducible Containerization:** The system specifies multi-container orchestration via `docker-compose.yml` linking Frontend, Backend, and Database containers.
+- **Offline Zero-Credential Grading:** Rather than demanding evaluator access to private Google Cloud service accounts, local demo execution leverages the **Firebase Local Emulator Suite**. This ensures that academic juries and instructors can clone the repository and launch the entire platform instantaneously via `docker compose up` without internet connectivity or cloud billing dependencies.
 
 ---
 
@@ -243,14 +249,15 @@ The platform implements a **Clean Layered Architecture** ensuring clear separati
 - **Decision:** Establish `openapi.yaml` (OpenAPI 3.1.0) as the immutable single source of truth. All endpoints, data schemas, and error models are defined and linted with Redocly CLI before code implementation.
 - **Consequences:** Eliminates integration divergence. Enables mock server generation via Stoplight Prism so frontend UI/UX development proceeds concurrently without live backend dependencies.
 
-### ADR-02: Technology Stack (React SPA + Node.js/Express + Firebase Firestore)
-- **Status:** Accepted
-- **Context:** The system requires rapid prototyping, responsive multi-role interfaces, zero cloud infrastructure cost, and robust document-level concurrency controls.
+### ADR-02: Technology Stack & Containerization Strategy
+- **Status:** Accepted (Updated for Sprint 2 Evaluation Alignment)
+- **Context:** The system requires rapid prototyping, responsive multi-role interfaces, zero cloud infrastructure cost, robust document-level concurrency controls, and single-command local reproducibility (`docker compose up`) mandated by the course grading rubric.
 - **Decision:**
-  - **Frontend:** React 18 with TypeScript for modular, type-safe single-page user interfaces.
-  - **Backend:** Node.js LTS with Express.js for lightweight, asynchronous RESTful API routing and middleware management.
-  - **Database:** Google Cloud Firestore (Native Mode) for managed serverless document persistence and zero-maintenance scaling.
-- **Consequences:** Firestore provides native atomic transaction primitives (`runTransaction`), satisfying strict concurrency requirements without requiring complex relational database setup.
+  - **Frontend:** React 18 with TypeScript, packaged as a multi-stage Docker container (`node:20-alpine` build stage $\rightarrow$ `nginx:alpine` runtime).
+  - **Backend:** Node.js LTS with Express.js, packaged as an Alpine Docker container (`node:20-alpine`).
+  - **Production Database:** Google Cloud Firestore (Native Mode) for managed cloud document persistence.
+  - **Local Demo & Evaluation Database:** Firebase Local Emulator Suite (`firebase-tools`), orchestrated alongside frontend and backend containers via `docker-compose.yml`.
+- **Consequences:** Eliminates external GCP account dependencies for evaluators and grading juries. Guarantees 100% reproducible execution via a single `docker compose up` command while retaining native atomic transaction locks (`runTransaction`) across both local emulator and production cloud environments.
 
 ### ADR-03: Concurrency Control Strategy via Atomic Transactions
 - **Status:** Accepted

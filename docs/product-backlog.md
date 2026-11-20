@@ -2,11 +2,10 @@
 
 This backlog specifies the refined functional requirements, user stories, sub-tasks, Gherkin (`Given-When-Then`) acceptance criteria, effort estimates, dependencies, and assigned engineering owners for the **Appointment and Class Scheduling System**.
 
-**Document Version:** 2.1 (Sprint 2)  
+**Document Version:** 2.2 (Sprint 2)  
 **SRS Reference:** `docs/SRS.md` (`FR-00` - `FR-09`)  
 **API Contract Reference:** `openapi.yaml` (`v0.3.0`)  
 **Product Owner:** Miraç Burak Esentürk  
-**Last Updated:** November 20, 2026  
 
 ---
 
@@ -39,8 +38,8 @@ The product backlog is organized into two primary architectural epics:
 * **Mapped SRS & Endpoints:** `FR-00`, `FR-01`, `FR-02`, `FR-03` (`POST /auth/login`, `POST /users`)
 
 #### Sub-Tasks
-- [ ] **Task 1.1:** Design Login and Admin User Provisioning forms in Figma (Owner: Nida `@anykaya06-cloud`).
-- [ ] **Task 1.2:** Implement `POST /auth/login` returning `token` and `role`, and `POST /users` with optional password / default credential generation and unique email enforcement.
+- [ ] **Task 1.1:** Design Login (Screen 1) and Admin User Provisioning form with required password input (Screen 2a) in Figma (Owner: Nida `@anykaya06-cloud`).
+- [ ] **Task 1.2:** Implement `POST /auth/login` returning `token`, `userId`, `name`, and `role`, and `POST /users` with mandatory password validation/hashing and unique email enforcement.
 - [ ] **Task 1.3:** Apply JWT authentication (`401 Unauthorized`) and `ADMIN` role guard middleware (`403 Forbidden`).
 - [ ] **Task 1.4:** Add automated contract and integration tests for `200`, `201`, `400`, `401`, `403`, and `409` responses.
 
@@ -48,13 +47,13 @@ The product backlog is organized into two primary architectural epics:
     Scenario 1: Successful user login
       Given a user exists with valid email and password
       When the user sends a POST request to "/auth/login" with their credentials
-      Then the system should return HTTP 200 OK with a valid JWT "token" and the user's "role"
+      Then the system should return HTTP 200 OK with a valid JWT "token", "userId", "name", and "role"
 
     Scenario 2: Successful user account creation by Admin
       Given I am authenticated with a valid JWT as a user with role "ADMIN"
-      When I send a POST request to "/users" with valid name, unique email, and role ("STUDENT" or "INSTRUCTOR")
-      Then the system should persist the user account (generating default credentials if password is omitted)
-      And return HTTP 201 Created with the created user metadata
+      When I send a POST request to "/users" with valid name, unique email, required password, and role ("STUDENT" or "INSTRUCTOR")
+      Then the system should securely hash the password and persist the user account
+      And return HTTP 201 Created with the created user metadata ("id", "name", "email", "role")
 
     Scenario 3: Duplicate email registration attempt
       Given I am authenticated as an "ADMIN"
@@ -64,7 +63,7 @@ The product backlog is organized into two primary architectural epics:
 
     Scenario 4: Missing or invalid request parameters
       Given I am authenticated as an "ADMIN"
-      When I send a POST request to "/users" with missing required fields or malformed email
+      When I send a POST request to "/users" with missing required fields (such as missing/weak password) or malformed email
       Then the system should reject the request with HTTP 400 Bad Request
 
     Scenario 5: Unauthenticated or unauthorized access
@@ -80,7 +79,7 @@ The product backlog is organized into two primary architectural epics:
 * **Mapped SRS & Endpoints:** `FR-01`, `FR-02`, `FR-04`, `FR-09` (`GET /users`, `POST /assignments`)
 
 #### Sub-Tasks
-- [ ] **Task 2.1:** Design 1-to-1 Student-Instructor pairing panel in Admin Dashboard (Figma Screen 3) (Owner: Nida `@anykaya06-cloud`).
+- [ ] **Task 2.1:** Design 1-to-1 Student-Instructor pairing panel in Admin Dashboard (Figma Screens 2a/2b) (Owner: Nida `@anykaya06-cloud`).
 - [ ] **Task 2.2:** Implement `GET /users?role=INSTRUCTOR` and `GET /users?role=STUDENT` for Admin dropdown selection.
 - [ ] **Task 2.3:** Implement `POST /assignments` enforcing a single active instructor per student, validating user existence (`404`) and strict role matching (`STUDENT` + `INSTRUCTOR`, `400`).
 - [ ] **Task 2.4:** Add automated Jest tests covering `200`, `201`, `400`, `401`, `403`, and `404` status codes.
@@ -121,7 +120,7 @@ The product backlog is organized into two primary architectural epics:
 * **Mapped SRS & Endpoints:** `FR-01`, `FR-02`, `FR-05`, `FR-06`, `FR-07` (`POST /availability`, `GET /availability?instructorId={id}`, `DELETE /availability/{id}`)
 
 #### Sub-Tasks
-- [ ] **Task 3.1:** Design Instructor Calendar View in Figma (add slot, view own slots, and delete `AVAILABLE` slots only) (Owner: Nida `@anykaya06-cloud`).
+- [ ] **Task 3.1:** Design Instructor Calendar View in Figma (Screen 3: add slot, view own slots, and delete `AVAILABLE` slots only) (Owner: Nida `@anykaya06-cloud`).
 - [ ] **Task 3.2:** Implement `POST /availability` with forward-looking UTC timestamp and chronological order checks.
 - [ ] **Task 3.3:** Support `GET /availability?instructorId={id}` for instructors viewing their own slots, and implement `DELETE /availability/{id}` permitting deletion strictly when `status == "AVAILABLE"` (`204 No Content`).
 - [ ] **Task 3.4:** Add unit and integration tests for past dates (`400`), unauthenticated access (`401`), and deleting `BOOKED` slots (`409`).
@@ -162,10 +161,10 @@ The product backlog is organized into two primary architectural epics:
 * **Mapped SRS & Endpoint:** `FR-01`, `FR-02`, `FR-07` (`GET /availability`)
 
 #### Sub-Tasks
-- [ ] **Task 4.1:** Design Student Booking Panel in Figma (showing only `AVAILABLE` slots of the assigned instructor) (Owner: Nida `@anykaya06-cloud`).
-- [ ] **Task 4.2:** Implement `GET /availability` resolving the student's single assigned instructor via JWT `userId`.
+- [ ] **Task 4.1:** Design Student Booking Panel in Figma (Screen 4: showing only `AVAILABLE` slots of the assigned instructor and empty/unassigned feedback for `403 INSTRUCTOR_NOT_ASSIGNED`) (Owner: Nida `@anykaya06-cloud`).
+- [ ] **Task 4.2:** Implement `GET /availability` resolving the student's single assigned instructor via JWT `userId`, returning `403 INSTRUCTOR_NOT_ASSIGNED` if no instructor is assigned.
 - [ ] **Task 4.3:** Filter records deterministically by `status == "AVAILABLE"` and optional `from` / `to` date-time boundary parameters.
-- [ ] **Task 4.4:** Write tests verifying `BOOKED` slots and unassigned instructors are completely hidden, and unauthorized roles receive `401`/`403`.
+- [ ] **Task 4.4:** Write tests verifying `BOOKED` slots and unassigned instructors are hidden, unassigned students receive `403 INSTRUCTOR_NOT_ASSIGNED`, and unauthorized roles receive `401`/`403`.
 
 #### Acceptance Criteria (Given-When-Then)
     Scenario 1: Student views available slots of their single assigned instructor
@@ -175,12 +174,18 @@ The product backlog is organized into two primary architectural epics:
       Then the system should return HTTP 200 OK containing only the "AVAILABLE" slots matching the date boundaries
       And any "BOOKED" slots must be excluded from the response
 
-    Scenario 2: Student has no available slots or no assigned instructor
-      Given I am authenticated as a "STUDENT" whose assigned instructor has no open slots (or no instructor is assigned yet)
+    Scenario 2: Assigned instructor has no available slots
+      Given I am authenticated as a "STUDENT" assigned to Instructor A
+      And Instructor A currently has no open "AVAILABLE" slots
       When I send a GET request to "/availability"
       Then the system should return HTTP 200 OK with an empty list "[]"
 
-    Scenario 3: Unauthorized or forbidden availability access
+    Scenario 3: Student has no assigned instructor
+      Given I am authenticated as a "STUDENT" who has not been assigned to any instructor yet
+      When I send a GET request to "/availability"
+      Then the system should reject the request with HTTP 403 Forbidden ("INSTRUCTOR_NOT_ASSIGNED")
+
+    Scenario 4: Unauthenticated or forbidden availability access
       Given I send a GET request to "/availability" without a valid JWT
       Then the system should return HTTP 401 Unauthorized
       When I am authenticated as an "ADMIN" (or as an "INSTRUCTOR" requesting another instructor's slots)
@@ -193,7 +198,7 @@ The product backlog is organized into two primary architectural epics:
 * **Mapped SRS & Endpoint:** `FR-01`, `FR-02`, `FR-08` (`POST /appointments`)
 
 #### Sub-Tasks
-- [ ] **Task 5.1:** Design one-click appointment booking confirmation and conflict alert states in Figma (Owner: Nida `@anykaya06-cloud`).
+- [ ] **Task 5.1:** Design one-click appointment booking confirmation and conflict alert states in Figma (Screen 4) (Owner: Nida `@anykaya06-cloud`).
 - [ ] **Task 5.2:** Implement `POST /appointments` accepting `availabilityId` wrapped in an atomic Firebase Firestore transaction and setting appointment status to `SCHEDULED`.
 - [ ] **Task 5.3:** Enforce JWT authentication (`401`) and authorization check ensuring the target `availabilityId` belongs to the student's assigned instructor (`403`).
 - [ ] **Task 5.4:** Write concurrency tests firing simultaneous booking requests to verify one `201 Created` and one `409 Conflict`.
@@ -204,7 +209,7 @@ The product backlog is organized into two primary architectural epics:
       And "avail-101" belongs to Instructor A with status "AVAILABLE"
       When I send a POST request to "/appointments" with "availabilityId": "avail-101"
       Then the system should atomically lock "avail-101" as "BOOKED" and create the appointment record with status "SCHEDULED"
-      And return HTTP 201 Created with the confirmed reservation details
+      And return HTTP 201 Created with the confirmed appointment metadata ("id", "availabilityId", "studentId", "status")
 
     Scenario 2: Race condition / concurrent booking prevention
       Given Student 1 and Student 2 are both assigned to Instructor A

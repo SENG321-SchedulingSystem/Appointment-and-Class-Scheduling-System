@@ -44,7 +44,6 @@ In-scope and deferred features: [System Boundary](docs/system-boundary.md)
 | Sprint 1 Retrospective | [docs/sprint-1-retrospective.md](docs/sprint-1-retrospective.md) |
 | Sprint 2 Retrospective | [docs/sprint-2-retrospective.md](docs/sprint-2-retrospective.md) |
 
-
 ## Team Roles
 For the detailed responsibility distribution, see the [RACI Matrix](docs/RACI_Matrix.md).
 

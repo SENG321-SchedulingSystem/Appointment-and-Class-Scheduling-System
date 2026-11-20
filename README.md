@@ -32,6 +32,8 @@ In-scope and deferred features: [System Boundary](docs/system-boundary.md)
 | API Contract | [openapi.yaml](openapi.yaml) |
 | API Integration Strategy | [docs/API_Integration_Strategy.md](docs/API_Integration_Strategy.md) |
 | QA & Test Strategy | [docs/QA_Strategy.md](docs/QA_Strategy.md) |
+| UML Sequence & Domain Diagrams | [docs/UML_Diagrams.md](docs/UML_Diagrams.md) |
+| Backend API (setup & run) | [backend/README.md](backend/README.md) |
 
 ## Team Roles
 For the detailed responsibility distribution, see the [RACI Matrix](docs/RACI_Matrix.md).

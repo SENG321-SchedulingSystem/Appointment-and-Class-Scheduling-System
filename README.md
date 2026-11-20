@@ -34,6 +34,16 @@ In-scope and deferred features: [System Boundary](docs/system-boundary.md)
 | QA & Test Strategy | [docs/QA_Strategy.md](docs/QA_Strategy.md) |
 | UML Sequence & Domain Diagrams | [docs/UML_Diagrams.md](docs/UML_Diagrams.md) |
 | Backend API (setup & run) | [backend/README.md](backend/README.md) |
+| Software Requirements Specification | [docs/SRS.md](docs/SRS.md) |
+| Software Architecture (C4 & ADRs) | [docs/Architecture.md](docs/Architecture.md) |
+| Non-Functional Requirements & Quality Measures | [docs/NFR_Quality_Measures.md](docs/NFR_Quality_Measures.md) |
+| UI/UX Specification & User Flows | [docs/UI_UX_Specification.md](docs/UI_UX_Specification.md) |
+| Deployment Architecture | [docs/Deployment_Architecture.md](docs/Deployment_Architecture.md) |
+| Git Workflow & Release Process | [docs/Git_Workflow.md](docs/Git_Workflow.md) |
+| Sprint 2 Release Notes | [docs/Sprint_2_Release_Notes.md](docs/Sprint_2_Release_Notes.md) |
+| Sprint 1 Retrospective | [docs/sprint-1-retrospective.md](docs/sprint-1-retrospective.md) |
+| Sprint 2 Retrospective | [docs/sprint-2-retrospective.md](docs/sprint-2-retrospective.md) |
+
 
 ## Team Roles
 For the detailed responsibility distribution, see the [RACI Matrix](docs/RACI_Matrix.md).
@@ -50,10 +60,12 @@ For the detailed responsibility distribution, see the [RACI Matrix](docs/RACI_Ma
 * `develop`: Integrates completed work intended for the next sprint release.
 * `feature/*`: Short-lived branches for a single user story, technical task, or defect.
 
+Full branching, review and release rules: [Git Workflow](docs/Git_Workflow.md)
+
 ## Team Rules
 * **Issue First:** Every change starts with a GitHub Issue, and the PR references it.
 * **Pull Requests:** Direct pushes to main and develop are blocked.
-* **Merge Requirements:** Every PR needs at least **1 peer review** and a **green CI check** (OpenAPI lint) before merging.
+* **Merge Requirements:** Every PR needs at least **1 peer review** and **green CI checks** (OpenAPI lint and Markdown/YAML validation) before merging.
 
 ## License
 This project is licensed under the [MIT License](LICENSE). The rationale is given in the [Project Proposal](docs/project-proposal.md).
@@ -61,4 +73,10 @@ This project is licensed under the [MIT License](LICENSE). The rationale is give
 ## Sprint 1 Submission
 * **Release Tag:** [sprint-1](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/releases/tag/sprint-1)
 * **Pull Request:** [Sprint 1 Merged PRs](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pulls?q=is%3Apr+is%3Amerged+base%3Amain)
+* **Project Board (Issues):** [SENG 321 Project Board](https://github.com/orgs/SENG321-SchedulingSystem/projects/2)
+
+## Sprint 2 Submission
+* **Release Tag:** [sprint-2](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/releases/tag/sprint-2)
+* **Release Notes:** [Sprint 2 Release Notes](docs/Sprint_2_Release_Notes.md)
+* **Retrospective:** [Sprint 2 Retrospective](docs/sprint-2-retrospective.md)
 * **Project Board (Issues):** [SENG 321 Project Board](https://github.com/orgs/SENG321-SchedulingSystem/projects/2)

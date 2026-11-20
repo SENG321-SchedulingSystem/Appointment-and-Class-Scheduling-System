@@ -6,6 +6,7 @@ This backlog specifies the refined functional requirements, user stories, sub-ta
 **SRS Reference:** `docs/SRS.md` (`FR-00` - `FR-09`)  
 **API Contract Reference:** `openapi.yaml` (`v0.3.0`)  
 **Product Owner:** Miraç Burak Esentürk  
+**Last Updated:** November 20, 2026
 
 ---
 

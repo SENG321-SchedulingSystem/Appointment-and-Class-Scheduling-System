@@ -88,8 +88,8 @@ graph TD
 #### Container Responsibilities & Technology Stack
 | Container | Primary Technology | Packaging / Docker Target | Protocol / Port | Operational Responsibility |
 |:---|:---|:---|:---|:---|
-| **Frontend SPA** | React 18, TypeScript, Tailwind CSS, Axios | Docker (`node:20-alpine` build + `nginx:alpine` runner) | HTTPS (Port 443 / 5173 dev / 80 Docker) | Client-side routing, role-based screen rendering, JWT token persistence (in-memory / secure cookie). Zero direct database connection. |
-| **Backend API** | Node.js (v20 LTS), Express.js | Docker (`node:20-alpine` runtime) | HTTPS / HTTP (Port 3000 / 8080) | Request validation, authentication claims extraction, business rule validation, atomic database transaction coordination. |
+| **Frontend SPA** | React 18, TypeScript, Tailwind CSS, Axios | Docker (`node:22-alpine` build + `nginx:alpine` runner) | HTTPS (Port 443 / 5173 dev / 80 Docker) | Client-side routing, role-based screen rendering, JWT token persistence (in-memory / secure cookie). Zero direct database connection. |
+| **Backend API** | Node.js (v22 LTS), Express.js | Docker (`node:22-alpine` runtime) | HTTPS / HTTP (Port 3000 / 8080) | Request validation, authentication claims extraction, business rule validation, atomic database transaction coordination. |
 | **Database (Cloud)** | Google Cloud Firestore (Native Mode) | Cloud Managed (GCP) | gRPC / TLS (Port 443) | Document storage for `users`, `availabilities`, `appointments`, and `assignments`. Enforces isolated transaction locks in Production/Staging. |
 | **Database (Local Demo)** | Firebase Local Emulator Suite | Docker (`spine3/firebase-emulator` or local CLI) | HTTP / gRPC (Port 8080 Firestore, 9099 Auth) | Fully isolated, zero-credential local persistence container for single-command `docker compose up` grading and demo evaluation. |
 | **Mock Engine** | Stoplight Prism CLI | Docker / CLI | HTTP (Port 4010) | Validates frontend client requests against `openapi.yaml` schemas during development without requiring a live backend. |
@@ -253,8 +253,8 @@ The platform implements a **Clean Layered Architecture** ensuring clear separati
 - **Status:** Accepted (Updated for Sprint 2 Evaluation Alignment)
 - **Context:** The system requires rapid prototyping, responsive multi-role interfaces, zero cloud infrastructure cost, robust document-level concurrency controls, and single-command local reproducibility (`docker compose up`) mandated by the course grading rubric.
 - **Decision:**
-  - **Frontend:** React 18 with TypeScript, packaged as a multi-stage Docker container (`node:20-alpine` build stage $\rightarrow$ `nginx:alpine` runtime).
-  - **Backend:** Node.js LTS with Express.js, packaged as an Alpine Docker container (`node:20-alpine`).
+  - **Frontend:** React 18 with TypeScript, packaged as a multi-stage Docker container (`node:22-alpine` build stage $\rightarrow$ `nginx:alpine` runtime).
+  - **Backend:** Node.js 22 LTS with Express.js, packaged as an Alpine Docker container (`node:22-alpine`). Upgraded to Node 22 to fulfill `firebase-admin` (v14+) engine prerequisites and account for Node 20 LTS reaching End-of-Life in April 2026.
   - **Production Database:** Google Cloud Firestore (Native Mode) for managed cloud document persistence.
   - **Local Demo & Evaluation Database:** Firebase Local Emulator Suite (`firebase-tools`), orchestrated alongside frontend and backend containers via `docker-compose.yml`.
 - **Consequences:** Eliminates external GCP account dependencies for evaluators and grading juries. Guarantees 100% reproducible execution via a single `docker compose up` command while retaining native atomic transaction locks (`runTransaction`) across both local emulator and production cloud environments.

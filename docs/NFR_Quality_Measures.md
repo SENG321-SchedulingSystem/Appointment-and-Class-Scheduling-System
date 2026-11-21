@@ -3,7 +3,7 @@
 **Project:** Appointment and Class Scheduling System
 **Role Owner:** Merve Öksüz (QA & Test Automation Engineer)
 **API Contract Reference:** `openapi.yaml` (v0.3.0)
-**Related Documents:** [`QA_Strategy.md`](QA_Strategy.md), [`Architecture.md`](Architecture.md), [`product-backlog.md`](product-backlog.md), [`SRS.md`](SRS.md)
+**Related Documents:** [`QA_Strategy.md`](QA_Strategy.md), [`Architecture.md`](Architecture.md), [`product-backlog.md`](product-backlog.md), [`SRS.md`](SRS.md), [`UI_UX_Specification.md`](UI_UX_Specification.md)
 
 This document defines the non-functional requirements (NFRs) of the system and the measurable quality measures used to verify them. Every requirement has an ID, a target value and a verification method, so that it can be tested objectively. Targets were agreed in the Sprint 2 team plan; verification is automated in Sprint 3, when the implementation is available.
 
@@ -16,7 +16,7 @@ This document defines the non-functional requirements (NFRs) of the system and t
 | ID | Requirement | Measurable Target | Verification Method |
 |---|---|---|---|
 | NFR-P1 | API response time | 95% of API requests respond in **< 200 ms** (measured in the local Docker Compose environment with the Firebase Emulator, 50 sequential requests per endpoint plus 10 parallel requests on `POST /appointments`) | Automated timing test in the Jest/integration suite, p95 calculated from the recorded response times |
-| NFR-P2 | Appointment completion speed | A student completes the flow from the booking screen to the confirmation in **< 15 seconds** | Timed usability check with 3 testers on the Figma prototype / final UI |
+| NFR-P2 | Appointment completion speed | A student completes the flow from the booking screen (frame 4a) to the confirmation (frame 4b) in **< 15 seconds** | Timed usability check with 3 testers on the Figma prototype / final UI |
 
 ### 1.2 Consistency and Concurrency
 
@@ -47,8 +47,8 @@ This document defines the non-functional requirements (NFRs) of the system and t
 | ID | Requirement | Measurable Target | Verification Method |
 |---|---|---|---|
 | NFR-U1 | Accessibility | The user interface complies with **WCAG 2.1 Level AA**: text contrast >= 4.5:1, all functions usable with the keyboard, visible focus indicator, form fields have labels, buttons and headings have meaningful names for screen readers (ARIA where needed) | Automated check (axe / Lighthouse accessibility score >= 90) + manual keyboard and screen-reader check |
-| NFR-U2 | Responsive design | All 5 screens are usable without horizontal scrolling at **360 px** (mobile), **768 px** (tablet) and **1280 px** (desktop) | Manual check in browser dev tools at the three breakpoints |
-| NFR-U3 | Clear conflict feedback | If a booking fails with `409`, the UI shows an understandable message and the updated slot list | Check against the Figma Screen 4 conflict state |
+| NFR-U2 | Responsive design | All screens (4 core flows, 13 Figma frames) are usable without horizontal scrolling at **1280 px** (desktop); the student and instructor screens are also usable at **360 px** (mobile, frames 3m and 4m) and **768 px** (tablet) | Manual check in browser dev tools at the three breakpoints |
+| NFR-U3 | Clear conflict feedback | If a booking fails with `409`, the UI shows an understandable message and the updated slot list | Check against Figma frame 4c (Slot taken) |
 
 ### 1.6 Maintainability and Portability
 
@@ -102,4 +102,4 @@ Shows which NFRs protect each user story of the backlog (`product-backlog.md`).
 
 - Performance targets are measured locally with the Firebase Emulator; cloud latency is out of scope for Sprint 2.
 - Automated verification of NFR-P1, NFR-C1, NFR-S3 and the accessibility checks depends on the implementation and is planned for Sprint 3.
-- Screen 5 (Appointment History and Profile) in the Figma plan is outside the Sprint 2 backlog scope (see `product-backlog.md`, section 5), so no NFR is defined for it.
+- Appointment history, cancellation and profile editing are outside the Sprint 2 scope (see `UI_UX_Specification.md`, section 2, and `product-backlog.md`), so no NFR is defined for them.

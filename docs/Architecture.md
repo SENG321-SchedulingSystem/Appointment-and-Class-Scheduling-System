@@ -5,7 +5,7 @@
 **Lead Architect & Technical Lead:** Eren Okat ([@erenokt3](https://github.com/erenokt3) — Student ID: 230204008)  
 **Academic Term:** Fall 2026  
 **Institution:** Ankara Science University — Department of Computer Engineering  
-**API Specification Source:** [`openapi.yaml`](../openapi.yaml) (OpenAPI 3.1.0 — Contract v0.2.1)  
+**API Specification Source:** [`openapi.yaml`](../openapi.yaml) (OpenAPI 3.1.0 — Contract v0.3.0)  
 
 ---
 
@@ -110,8 +110,8 @@ graph TD
   subgraph ExpressApp [Node.js / Express API Server Container]
     subgraph RoutingLayer [Routing Layer]
       AuthRouter["<b>Auth Router</b><br/>[Express Router]<br/>Routes POST /auth/login"]
-      UserRouter["<b>User & Pairing Router</b><br/>[Express Router]<br/>Routes POST /users, POST /assignments"]
-      AvailRouter["<b>Availability Router</b><br/>[Express Router]<br/>Routes POST /availability, GET /availability"]
+      UserRouter["<b>User & Pairing Router</b><br/>[Express Router]<br/>Routes POST /users, GET /users, POST /assignments"]
+      AvailRouter["<b>Availability Router</b><br/>[Express Router]<br/>Routes POST /availability, GET /availability, DELETE /availability/:id"]
       ApptRouter["<b>Appointment Router</b><br/>[Express Router]<br/>Routes POST /appointments"]
     end
 

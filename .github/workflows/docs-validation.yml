@@ -1,0 +1,57 @@
+name: Documentation & YAML CI Validation
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-docs-and-config:
+    name: Validate Markdown & YAML Integrity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run Markdown Structural & Accessibility Lint
+        run: npx --yes markdownlint-cli2 "README.md" "docs/**/*.md"
+
+      - name: Validate YAML Configuration Files
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 -c '
+          import glob, os, sys, yaml
+
+          candidates = (
+              glob.glob(".github/**/*.yml", recursive=True)
+              + glob.glob(".github/**/*.yaml", recursive=True)
+              + glob.glob("docker-compose*.yml")
+              + glob.glob("docker-compose*.yaml")
+          )
+          if os.path.exists("openapi.yaml"):
+              candidates.append("openapi.yaml")
+
+          files = sorted(set(candidates))
+          failed = False
+          for path in files:
+              try:
+                  with open(path, "r", encoding="utf-8") as f:
+                      yaml.safe_load(f)
+                  print(f"[OK] Valid YAML: {path}")
+              except Exception as exc:
+                  print(f"[ERROR] Invalid YAML in {path}: {exc}")
+                  failed = True
+
+          if failed:
+              sys.exit(1)
+          '

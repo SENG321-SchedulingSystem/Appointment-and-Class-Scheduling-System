@@ -34,6 +34,26 @@ This document defines the roles and responsibilities of the team members for Spr
 | **Sprint Tracking, RACI & Retrospective** | C | I | I | R/A | C | I |
 | **Sprint 2 Release & Tag** | I | C | I | C | I | R/A |
 
+### Sprint 3 RACI Matrix (MVP & CI/CD)
+
+| Sprint 3 Deliverable | Miraç (PO) | Eren (Architect) | Furkan (Implementation) | Nida (Scrum Master) | Merve (QA) | Kağan (DevOps) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Sprint 3 Board, Planning & Task Tracking** | C | C | I | R/A | I | I |
+| **Frontend Skeleton (React + Vite + Tailwind)** | I | C | I | R/A | I | C |
+| **GitHub Actions CI Pipeline (Tests & Coverage)** | I | C | I | I | C | R/A |
+| **Jest Coverage Threshold (≥ 50%) & Test Report** | I | C | C | I | R/A | C |
+| **Backend Core: Auth, Users, Assignments & Seed Script** | I | A | R | I | C | I |
+| **Availability Routes & Atomic Booking Engine** | I | R/A | C | I | C | I |
+| **docker-compose (Frontend + Backend + Firebase Emulator)** | I | C | C | I | I | R/A |
+| **Frontend Screens 1–2 (Login, Admin)** | C | C | C | R/A | I | I |
+| **Frontend Screens 3–4 (Instructor Calendar, Student Booking)** | R/A | C | C | C | I | I |
+| **Concurrency Stress Test** | I | R/A | C | I | C | I |
+| **Deployment (Vercel + Render / Cloud Run)** | I | C | I | I | I | R/A |
+| **User Story Acceptance Testing** | R/A | I | I | C | C | I |
+| **Stand-ups, RACI & Sprint 3 Retrospective** | C | I | I | R/A | C | I |
+| **Individual Contributions (CONTRIBUTIONS.md)** | I | R/A | I | C | I | I |
+| **Sprint 3 Release, Tag & Submission** | I | C | I | C | I | R/A |
+
 ### Legend
 * **R (Responsible):** The person who actually does the work to complete the task.
 * **A (Accountable):** The person who is ultimately answerable for the correct completion of the deliverable.

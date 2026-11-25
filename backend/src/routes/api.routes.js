@@ -11,6 +11,8 @@ const ApiError = require('../errors/ApiError');
 const { createAuthService } = require('../services/authService');
 const { createUserService } = require('../services/userService');
 const { createAssignmentService } = require('../services/assignmentService');
+const { createAvailabilityService } = require('../services/availabilityService');
+const { validateAvailabilityQuery } = require('../validation/validators');
 
 const notImplemented = (operationId) => (_req, _res, next) => next(ApiError.notImplemented(operationId));
 
@@ -18,11 +20,12 @@ const notImplemented = (operationId) => (_req, _res, next) => next(ApiError.notI
 // paths still fall through to the 404 handler instead of answering 401.
 const guard = (...roles) => [authenticate, requireRole(...roles)];
 
-function createApiRouter({ userRepo, assignmentRepo }) {
+function createApiRouter({ userRepo, assignmentRepo, availabilityRepo }) {
   const router = Router();
   const authService = createAuthService({ userRepo });
   const userService = createUserService({ userRepo });
   const assignmentService = createAssignmentService({ userRepo, assignmentRepo });
+  const availabilityService = createAvailabilityService({ availabilityRepo });
 
   // Public
   router.post('/auth/login', async (req, res) => {
@@ -45,9 +48,29 @@ function createApiRouter({ userRepo, assignmentRepo }) {
   });
 
   // US-03 / US-04: Availability
-  router.get('/availability', guard('INSTRUCTOR', 'STUDENT'), notImplemented('listAvailability'));
-  router.post('/availability', guard('INSTRUCTOR'), notImplemented('addAvailability'));
-  router.delete('/availability/:id', guard('INSTRUCTOR'), notImplemented('deleteAvailability'));
+  router.get('/availability', guard('INSTRUCTOR', 'STUDENT'), async (req, res, next) => {
+    if (req.user.role === 'INSTRUCTOR') {
+      const validationErrors = validateAvailabilityQuery(req.query);
+      if (validationErrors.length) {
+        throw ApiError.badRequest(validationErrors.join(' '));
+      }
+      if (req.query.instructorId && req.query.instructorId !== req.user.id) {
+        throw ApiError.forbidden('Instructors may only view their own availability.', 'FORBIDDEN');
+      }
+      return res.json(await availabilityService.listInstructorSlots(req.user.id, req.query));
+    }
+    // US-04 (#22): Student view is handled in the next user story.
+    return next(ApiError.notImplemented('listAvailability'));
+  });
+
+  router.post('/availability', guard('INSTRUCTOR'), async (req, res) => {
+    res.status(201).json(await availabilityService.createSlot(req.user.id, req.body));
+  });
+
+  router.delete('/availability/:id', guard('INSTRUCTOR'), async (req, res) => {
+    await availabilityService.deleteSlot(req.params.id, req.user.id);
+    res.status(204).end();
+  });
 
   // US-05: Appointment booking
   router.post('/appointments', guard('STUDENT'), notImplemented('createAppointment'));

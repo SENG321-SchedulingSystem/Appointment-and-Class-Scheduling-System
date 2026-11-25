@@ -11,11 +11,13 @@ This document describes how the frontend and backend of the Scheduling System ar
 
 | Environment | Base URL | Purpose |
 | :--- | :--- | :--- |
-| **mock** | `http://localhost:3000` | Prism mock generated from `openapi.yaml` (matches the `servers` entry). Used for frontend development and contract tests before the backend exists. |
-| **dev** | To be defined in Sprint 2 | Real backend connected to the Firebase development project. |
-| **prod** | Deferred | Not part of the first release. |
+| **mock** | `http://localhost:4010` | Prism mock generated from `openapi.yaml`. Used for frontend development and contract tests before an endpoint exists in the backend. Port 3000 also works when the real backend is not running. |
+| **dev** | `http://localhost:3000` | Real backend (`cd backend && npm run dev`) against the Firebase Local Emulator. Seed users with `npm run seed`. |
+| **prod** | Render URL (Sprint 3 deployment) | Deployed backend. Its `CORS_ORIGINS` must list the Vercel frontend URL. |
 
-The frontend reads the base URL from a single configuration value, so switching from `mock` to `dev` does not require code changes.
+The frontend reads the base URL from a single configuration value, `VITE_API_BASE_URL` (see `frontend/.env.example`), so switching from `mock` to `dev` does not require code changes. All calls go through `frontend/src/api/client.js`, which adds the `Authorization` header and turns every error response into an `ApiError` with `status` and `code`.
+
+The backend sends CORS headers only to the origins in its `CORS_ORIGINS` setting. The default is the Vite dev server (`http://localhost:5173`).
 
 ### 3. Data Format and Errors
 * Request and response bodies use `application/json`.
@@ -44,16 +46,16 @@ Requires Node.js. No installation inside the repository is needed.
 # Validate the contract
 npx @redocly/cli@1 lint openapi.yaml --extends=minimal
 
-# Start the mock server on the port defined in `servers`
-npx @stoplight/prism-cli@5 mock openapi.yaml -p 3000
+# Start the mock server (port 4010 leaves 3000 free for the real backend)
+npx @stoplight/prism-cli@5 mock openapi.yaml -p 4010
 
 # Book a slot (success). Any bearer token is accepted by the mock.
-curl -X POST http://localhost:3000/appointments \
+curl -X POST http://localhost:4010/appointments \
   -H "Authorization: Bearer test" -H "Content-Type: application/json" \
   -d '{"availabilityId":"avail_789"}'
 
 # Force the double-booking case
-curl -X POST http://localhost:3000/appointments \
+curl -X POST http://localhost:4010/appointments \
   -H "Authorization: Bearer test" -H "Prefer: code=409" -H "Content-Type: application/json" \
   -d '{"availabilityId":"avail_789"}'
 ```

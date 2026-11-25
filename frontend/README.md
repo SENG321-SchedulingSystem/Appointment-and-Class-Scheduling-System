@@ -1,4 +1,34 @@
-# React + Vite
+# Frontend (React + Vite + Tailwind)
+
+## Connecting to the API
+
+```bash
+cp .env.example .env.local   # pick the real backend or the Prism mock
+npm install
+npm run dev                  # http://localhost:5173
+```
+
+`VITE_API_BASE_URL` decides where requests go: `http://localhost:3000` for the real backend, `http://localhost:4010` for the Prism mock. Restart `npm run dev` after changing it.
+
+Call the backend only through `src/api/client.js`:
+
+```js
+import { api, ApiError } from './api/client'
+
+try {
+  const { token, role, name } = await api.login(email, password)
+} catch (err) {
+  if (err instanceof ApiError && err.status === 401) {
+    // wrong email or password
+  }
+}
+```
+
+Branch on `err.status` and `err.code` (for example `409` / `EMAIL_ALREADY_EXISTS`), not on the message text. `status: 0` with `code: 'NETWORK_ERROR'` means the API could not be reached. The backend allows `http://localhost:5173` through CORS by default.
+
+---
+
+## About the template
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

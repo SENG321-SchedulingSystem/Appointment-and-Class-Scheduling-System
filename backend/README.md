@@ -5,7 +5,7 @@ REST API skeleton for the Appointment and Class Scheduling System. It implements
 **Contract:** [`openapi.yaml`](../openapi.yaml) v0.3.0
 **Design:** [`docs/UML_Diagrams.md`](../docs/UML_Diagrams.md)
 
-## Status (Sprint 2)
+## Status (Sprint 3)
 
 | Layer | State |
 | :--- | :--- |
@@ -13,7 +13,8 @@ REST API skeleton for the Appointment and Class Scheduling System. It implements
 | Firebase Admin SDK connection (Local Emulator or Cloud Firestore) | Done, checked by `GET /health/ready` |
 | Bearer JWT authentication (`401`) and role guards (`403`) on every contract route | Done |
 | RFC 7807 `application/problem+json` error handler | Done |
-| Business logic for the contract operations | Sprint 3. Each route answers `501 NOT_IMPLEMENTED` after passing its guards. |
+| `POST /auth/login`, `GET /users`, `POST /users` (US-01, #19) | Done. bcrypt password hashes, unique emails, `npm run seed` for the first admin |
+| Assignments, availability, appointments | In progress. These routes answer `501 NOT_IMPLEMENTED` after passing their guards. |
 
 ## Requirements
 
@@ -34,6 +35,14 @@ npm run emulator
 npm run dev
 ```
 
+Create the first users (safe to run again):
+
+```bash
+npm run seed   # admin@example.com / Admin12345, instructor@example.com / Instructor123, student@example.com / Student123
+```
+
+The demo passwords are for local development only. With `NODE_ENV=production` the script creates just the admin from `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`.
+
 Check that everything is connected:
 
 ```bash
@@ -49,7 +58,7 @@ The Prism mock server from [`docs/API_Integration_Strategy.md`](../docs/API_Inte
 npm test
 ```
 
-The tests do not need Firebase. They cover the health endpoint, the RFC 7807 error format, the `401` cases (missing, forged, expired token, unknown role), and the full role matrix from `docs/UML_Diagrams.md` §4.1.
+The tests do not need Firebase: they inject an in-memory user repository (`tests/helpers/memoryUserRepository.js`). They cover the health endpoint, the RFC 7807 error format, the `401` cases (missing, forged, expired token, unknown role), the full role matrix from `docs/UML_Diagrams.md` §4.1, the US-01 acceptance criteria (`200`, `201`, `400`, `401`, `403`, `409`) and the seed script.
 
 ## Configuration
 
@@ -61,6 +70,7 @@ The tests do not need Firebase. They cover the health endpoint, the RFC 7807 err
 | `JWT_EXPIRES_IN` | `1h` | Token lifetime |
 | `FIREBASE_PROJECT_ID` | `demo-scheduling` | A `demo-` id runs offline against the emulator |
 | `FIRESTORE_EMULATOR_HOST` | empty | For example `localhost:8080`. When empty, Cloud Firestore is used with Application Default Credentials. |
+| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | dev demo admin | Admin created by `npm run seed`. Required when `NODE_ENV=production`. |
 
 ## Docker
 
@@ -86,13 +96,21 @@ backend/
 │   │   ├── firebase.js         # Firebase Admin SDK, getDb(), readiness probe
 │   │   └── collections.js      # Firestore collection names
 │   ├── errors/ApiError.js      # RFC 7807 problem errors
+│   ├── validation/validators.js # Request checks for the openapi.yaml schemas
+│   ├── services/
+│   │   ├── authService.js      # POST /auth/login: verify password, sign JWT
+│   │   ├── userService.js      # POST/GET /users, hides password hashes
+│   │   └── password.js         # bcrypt hash / verify
+│   ├── repositories/
+│   │   └── userRepository.js   # Firestore users + userEmails uniqueness index
 │   ├── middleware/
 │   │   ├── auth.js             # authenticate (JWT) and requireRole (RBAC)
 │   │   └── errorHandler.js     # 404 and global problem+json handler
 │   └── routes/
 │       ├── health.routes.js    # /health, /health/ready (not part of the contract)
 │       └── api.routes.js       # All openapi.yaml operations with guards
+├── scripts/seed.js             # npm run seed
 └── tests/                      # Jest + Supertest
 ```
 
-In Sprint 3, `services/` (AuthService, UserService, AvailabilityService, AppointmentEngine) and `repositories/` (UserRepo, PairingRepo, AvailRepo, ApptRepo) are added between the routes and Firestore, following the sequence diagrams.
+The remaining services (AvailabilityService, AppointmentEngine) and repositories (PairingRepo, AvailRepo, ApptRepo) follow the same pattern, as in the sequence diagrams.

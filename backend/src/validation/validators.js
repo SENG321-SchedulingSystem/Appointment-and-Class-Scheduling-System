@@ -9,6 +9,10 @@ const { ROLES } = require('../middleware/auth');
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_MIN_LENGTH = 8; // SRS FR-03
 
+// Firestore document ids: the generated ones are 20 alphanumerics; the contract
+// examples look like "stu_456". Anything with "/" would address a sub-path.
+const ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
+
 const isNonEmptyString = (v) => typeof v === 'string' && v.trim().length > 0;
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
 
@@ -44,4 +48,21 @@ function validateRoleFilter(role) {
   return ROLES.includes(role) ? [] : [`role must be one of ${ROLES.join(', ')}.`];
 }
 
-module.exports = { PASSWORD_MIN_LENGTH, normalizeEmail, validateLogin, validateNewUser, validateRoleFilter };
+function validateAssignment(body) {
+  if (!isObject(body)) return ['Request body must be a JSON object.'];
+  const errors = [];
+  for (const field of ['studentId', 'instructorId']) {
+    if (!isNonEmptyString(body[field])) errors.push(`${field} is required.`);
+    else if (!ID_RE.test(body[field])) errors.push(`${field} is not a valid id.`);
+  }
+  return errors;
+}
+
+module.exports = {
+  PASSWORD_MIN_LENGTH,
+  normalizeEmail,
+  validateLogin,
+  validateNewUser,
+  validateRoleFilter,
+  validateAssignment,
+};

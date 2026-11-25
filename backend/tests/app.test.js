@@ -6,8 +6,12 @@ const { createApp } = require('../src/app');
 const { signToken } = require('../src/middleware/auth');
 const { config } = require('../src/config/env');
 const { createMemoryUserRepository } = require('./helpers/memoryUserRepository');
+const { createMemoryAssignmentRepository } = require('./helpers/memoryAssignmentRepository');
 
-const app = createApp({ userRepo: createMemoryUserRepository() });
+const app = createApp({
+  userRepo: createMemoryUserRepository(),
+  assignmentRepo: createMemoryAssignmentRepository(),
+});
 
 const tokenFor = (role, id = `${role.toLowerCase()}_1`) => `Bearer ${signToken({ id, role })}`;
 

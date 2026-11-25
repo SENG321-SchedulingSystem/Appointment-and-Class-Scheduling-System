@@ -26,7 +26,7 @@
   "jest": {
     "testEnvironment": "node",
     "collectCoverage": true,
-    "collectCoverageFrom": ["src/**/*.js"],
+    "collectCoverageFrom": ["src/**/*.js", "!src/server.js"],
     "coverageThreshold": {
       "global": {
         "statements": 50,

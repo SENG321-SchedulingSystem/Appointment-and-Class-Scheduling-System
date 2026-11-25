@@ -5,8 +5,15 @@ const jwt = require('jsonwebtoken');
 const { createApp } = require('../src/app');
 const { signToken } = require('../src/middleware/auth');
 const { config } = require('../src/config/env');
+const { createMemoryUserRepository } = require('./helpers/memoryUserRepository');
+const { createMemoryAssignmentRepository } = require('./helpers/memoryAssignmentRepository');
+const { createMemoryAvailabilityRepository } = require('./helpers/memoryAvailabilityRepository');
 
-const app = createApp();
+const app = createApp({
+  userRepo: createMemoryUserRepository(),
+  assignmentRepo: createMemoryAssignmentRepository(),
+  availabilityRepo: createMemoryAvailabilityRepository(),
+});
 
 const tokenFor = (role, id = `${role.toLowerCase()}_1`) => `Bearer ${signToken({ id, role })}`;
 
@@ -84,8 +91,8 @@ describe('role authorization matrix (docs/UML_Diagrams.md §4.1)', () => {
       test(`${role} ${method.toUpperCase()} ${path} -> ${isAllowed ? 'passes guard' : '403'}`, async () => {
         const res = await request(app)[method](path).set('Authorization', tokenFor(role));
         if (isAllowed) {
-          // Guard passed; business logic is not implemented yet.
-          expectProblem(res, 501, 'NOT_IMPLEMENTED');
+          // Guard passed; whatever the handler answers, it is not an auth error.
+          expect([401, 403]).not.toContain(res.status);
         } else {
           expectProblem(res, 403, 'FORBIDDEN');
         }
@@ -93,8 +100,8 @@ describe('role authorization matrix (docs/UML_Diagrams.md §4.1)', () => {
     }
   }
 
-  test('POST /auth/login is public', async () => {
-    const res = await request(app).post('/auth/login').send({ email: 'a@b.c', password: 'x' });
-    expectProblem(res, 501, 'NOT_IMPLEMENTED');
+  test('POST /auth/login is public (no token needed to reach validation)', async () => {
+    const res = await request(app).post('/auth/login').send({});
+    expectProblem(res, 400, 'VALIDATION_ERROR');
   });
 });

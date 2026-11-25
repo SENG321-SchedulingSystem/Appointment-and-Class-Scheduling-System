@@ -376,7 +376,8 @@ classDiagram
 
 | Entity | Collection | Document id | Indexed query fields |
 | :--- | :--- | :--- | :--- |
-| `User` | `users` | generated (`usr_…`) | `email` (unique, checked in a transaction), `role` |
+| `User` | `users` | generated (`usr_…`) | `email` (stored lower-case), `role` |
+| Email uniqueness index | `userEmails` | `sha256(email)` | none. Written together with the user in one batch `create()`, which fails with `ALREADY_EXISTS` for a taken email (`409 EMAIL_ALREADY_EXISTS`) |
 | `StudentInstructorPairing` | `assignments` | `studentId` | `instructorId` |
 | `AvailabilitySlot` | `availabilities` | generated (`avail_…`) | `instructorId` + `startTime`, `status` |
 | `Appointment` | `appointments` | generated (`apt_…`) | `studentId`, `instructorId`, `availabilityId` |

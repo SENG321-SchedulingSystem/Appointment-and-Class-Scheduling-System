@@ -14,7 +14,8 @@ REST API skeleton for the Appointment and Class Scheduling System. It implements
 | Bearer JWT authentication (`401`) and role guards (`403`) on every contract route | Done |
 | RFC 7807 `application/problem+json` error handler | Done |
 | `POST /auth/login`, `GET /users`, `POST /users` (US-01, #19) | Done. bcrypt password hashes, unique emails, `npm run seed` for the first admin |
-| Assignments, availability, appointments | In progress. These routes answer `501 NOT_IMPLEMENTED` after passing their guards. |
+| `POST /assignments` (US-02, #20) | Done. One instructor per student (`assignments/{studentId}`), `404` for unknown users, `400 ROLE_MISMATCH` |
+| Availability, appointments | In progress. These routes answer `501 NOT_IMPLEMENTED` after passing their guards. |
 
 ## Requirements
 
@@ -58,7 +59,7 @@ The Prism mock server from [`docs/API_Integration_Strategy.md`](../docs/API_Inte
 npm test
 ```
 
-The tests do not need Firebase: they inject an in-memory user repository (`tests/helpers/memoryUserRepository.js`). They cover the health endpoint, the RFC 7807 error format, the `401` cases (missing, forged, expired token, unknown role), the full role matrix from `docs/UML_Diagrams.md` §4.1, the US-01 acceptance criteria (`200`, `201`, `400`, `401`, `403`, `409`) and the seed script.
+The tests do not need Firebase: they inject an in-memory user repository (`tests/helpers/memoryUserRepository.js`). They cover the health endpoint, the RFC 7807 error format, the `401` cases (missing, forged, expired token, unknown role), the full role matrix from `docs/UML_Diagrams.md` §4.1, the US-01 and US-02 acceptance criteria and the seed script.
 
 ## Configuration
 
@@ -100,9 +101,11 @@ backend/
 │   ├── services/
 │   │   ├── authService.js      # POST /auth/login: verify password, sign JWT
 │   │   ├── userService.js      # POST/GET /users, hides password hashes
+│   │   ├── assignmentService.js # POST /assignments: existence and role checks
 │   │   └── password.js         # bcrypt hash / verify
 │   ├── repositories/
-│   │   └── userRepository.js   # Firestore users + userEmails uniqueness index
+│   │   ├── userRepository.js   # Firestore users + userEmails uniqueness index
+│   │   └── assignmentRepository.js # assignments/{studentId}
 │   ├── middleware/
 │   │   ├── auth.js             # authenticate (JWT) and requireRole (RBAC)
 │   │   └── errorHandler.js     # 404 and global problem+json handler
@@ -113,4 +116,4 @@ backend/
 └── tests/                      # Jest + Supertest
 ```
 
-The remaining services (AvailabilityService, AppointmentEngine) and repositories (PairingRepo, AvailRepo, ApptRepo) follow the same pattern, as in the sequence diagrams.
+The remaining services (AvailabilityService, AppointmentEngine) and repositories (AvailRepo, ApptRepo) follow the same pattern, as in the sequence diagrams.

@@ -10,6 +10,7 @@ const { authenticate, requireRole } = require('../middleware/auth');
 const ApiError = require('../errors/ApiError');
 const { createAuthService } = require('../services/authService');
 const { createUserService } = require('../services/userService');
+const { createAssignmentService } = require('../services/assignmentService');
 
 const notImplemented = (operationId) => (_req, _res, next) => next(ApiError.notImplemented(operationId));
 
@@ -17,10 +18,11 @@ const notImplemented = (operationId) => (_req, _res, next) => next(ApiError.notI
 // paths still fall through to the 404 handler instead of answering 401.
 const guard = (...roles) => [authenticate, requireRole(...roles)];
 
-function createApiRouter({ userRepo }) {
+function createApiRouter({ userRepo, assignmentRepo }) {
   const router = Router();
   const authService = createAuthService({ userRepo });
   const userService = createUserService({ userRepo });
+  const assignmentService = createAssignmentService({ userRepo, assignmentRepo });
 
   // Public
   router.post('/auth/login', async (req, res) => {
@@ -36,7 +38,11 @@ function createApiRouter({ userRepo }) {
   });
 
   // US-02: Admin student-instructor pairing
-  router.post('/assignments', guard('ADMIN'), notImplemented('assignStudent'));
+  // Re-assigning a student replaces the previous instructor and also answers
+  // 201, since the contract defines no 200 here (UML_Diagrams.md §6, point 3).
+  router.post('/assignments', guard('ADMIN'), async (req, res) => {
+    res.status(201).json(await assignmentService.assign(req.body, req.user.id));
+  });
 
   // US-03 / US-04: Availability
   router.get('/availability', guard('INSTRUCTOR', 'STUDENT'), notImplemented('listAvailability'));

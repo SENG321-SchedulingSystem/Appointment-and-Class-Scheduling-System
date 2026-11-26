@@ -8,6 +8,7 @@ const { createApp } = require('../src/app');
 const { signToken } = require('../src/middleware/auth');
 const { createMemoryUserRepository } = require('./helpers/memoryUserRepository');
 const { createMemoryAssignmentRepository } = require('./helpers/memoryAssignmentRepository');
+const { createMemoryAvailabilityRepository } = require('./helpers/memoryAvailabilityRepository');
 
 const bearer = (id, role) => `Bearer ${signToken({ id, role })}`;
 const ADMIN = bearer('adm_1', 'ADMIN');
@@ -20,13 +21,15 @@ function expectProblem(res, status, code) {
 
 let userRepo;
 let assignmentRepo;
+let availabilityRepo;
 let app;
 let ids;
 
 beforeEach(async () => {
   userRepo = createMemoryUserRepository();
   assignmentRepo = createMemoryAssignmentRepository();
-  app = createApp({ userRepo, assignmentRepo });
+  availabilityRepo = createMemoryAvailabilityRepository();
+  app = createApp({ userRepo, assignmentRepo, availabilityRepo });
 
   const make = (name, role) => userRepo.create({ name, email: `${name}@example.com`, passwordHash: 'h', role });
   ids = {

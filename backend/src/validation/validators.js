@@ -13,8 +13,18 @@ const PASSWORD_MIN_LENGTH = 8; // SRS FR-03
 // examples look like "stu_456". Anything with "/" would address a sub-path.
 const ID_RE = /^[A-Za-z0-9_-]{1,128}$/;
 
+// ISO-8601 date-time: e.g. 2026-11-01T10:00:00Z, 2026-11-01T10:00:00.000Z, or +03:00.
+const ISO_DATETIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+
 const isNonEmptyString = (v) => typeof v === 'string' && v.trim().length > 0;
 const isObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+function isValidIsoDateTime(v) {
+  if (typeof v !== 'string') return false;
+  if (!ISO_DATETIME_RE.test(v)) return false;
+  const ms = Date.parse(v);
+  return !Number.isNaN(ms);
+}
 
 function normalizeEmail(email) {
   return email.trim().toLowerCase();
@@ -58,11 +68,55 @@ function validateAssignment(body) {
   return errors;
 }
 
+function validateNewAvailability(body) {
+  if (!isObject(body)) return ['Request body must be a JSON object.'];
+  const errors = [];
+  if (!isNonEmptyString(body.startTime)) errors.push('startTime is required.');
+  else if (!isValidIsoDateTime(body.startTime)) errors.push('startTime must be a valid ISO-8601 date-time string.');
+
+  if (!isNonEmptyString(body.endTime)) errors.push('endTime is required.');
+  else if (!isValidIsoDateTime(body.endTime)) errors.push('endTime must be a valid ISO-8601 date-time string.');
+
+  return errors;
+}
+
+function validateAvailabilityQuery(query = {}) {
+  if (!isObject(query)) return ['Query parameters must be an object.'];
+  const errors = [];
+  if (query.instructorId !== undefined) {
+    if (!isNonEmptyString(query.instructorId) || !ID_RE.test(query.instructorId)) {
+      errors.push('instructorId is not a valid id.');
+    }
+  }
+  if (query.from !== undefined) {
+    if (!isNonEmptyString(query.from) || !isValidIsoDateTime(query.from)) {
+      errors.push('from must be a valid ISO-8601 date-time string.');
+    }
+  }
+  if (query.to !== undefined) {
+    if (!isNonEmptyString(query.to) || !isValidIsoDateTime(query.to)) {
+      errors.push('to must be a valid ISO-8601 date-time string.');
+    }
+  }
+  return errors;
+}
+
+function validateSlotId(id) {
+  if (!isNonEmptyString(id) || !ID_RE.test(id)) {
+    return ['id is not a valid id.'];
+  }
+  return [];
+}
+
 module.exports = {
   PASSWORD_MIN_LENGTH,
   normalizeEmail,
+  isValidIsoDateTime,
   validateLogin,
   validateNewUser,
   validateRoleFilter,
   validateAssignment,
+  validateNewAvailability,
+  validateAvailabilityQuery,
+  validateSlotId,
 };

@@ -5,6 +5,7 @@ const healthRoutes = require('./routes/health.routes');
 const { createApiRouter } = require('./routes/api.routes');
 const { createUserRepository } = require('./repositories/userRepository');
 const { createAssignmentRepository } = require('./repositories/assignmentRepository');
+const { createAvailabilityRepository } = require('./repositories/availabilityRepository');
 const { cors } = require('./middleware/cors');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
@@ -13,6 +14,7 @@ const { notFound, errorHandler } = require('./middleware/errorHandler');
 function createApp({
   userRepo = createUserRepository(),
   assignmentRepo = createAssignmentRepository(),
+  availabilityRepo = createAvailabilityRepository(),
   corsOrigins,
 } = {}) {
   const app = express();
@@ -23,7 +25,7 @@ function createApp({
   app.use(express.json({ limit: '100kb' }));
 
   app.use('/health', healthRoutes);
-  app.use('/', createApiRouter({ userRepo, assignmentRepo }));
+  app.use('/', createApiRouter({ userRepo, assignmentRepo, availabilityRepo }));
 
   app.use(notFound);
   app.use(errorHandler);

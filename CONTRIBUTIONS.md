@@ -33,6 +33,30 @@ This document serves as the formal individual contributions record for **Team 4*
   - [PR #102](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/102): `feat(backend): student appointment booking with concurrency prevention (#23)`
 - **Peer Review Activity (Sprint 3):** Formally reviewed and approved PR #93 (US-01: Auth & Users), PR #97 (CORS & API Client), and PR #101 (US-04: Student Availability).
 
+### 2. Furkan Çelebi
+- **Student ID:** 230204301
+- **GitHub Username:** [@furkancelebi06](https://github.com/furkancelebi06)
+- **Assigned Role (Sprint 3):** Implementation & Integration Engineer (Backend Core: Auth, Users, Assignments & Seed Script)
+- **Primary Responsibilities:**
+  - Implemented **US-01 (#19)**: `POST /auth/login` (bcrypt password verification, signed JWT with `token`, `userId`, `name`, `role`) and admin user management (`POST /users`, `GET /users?role=`), with mandatory password validation, case-insensitive unique emails (`409 EMAIL_ALREADY_EXISTS`), and password hashes never returned (NFR-S4).
+  - Designed the race-safe email uniqueness index (`userEmails/{sha256(email)}`, written with the user in one batch `create()`) after the Firestore emulator showed that a query inside a transaction caused lock timeouts. Verified with 10 concurrent duplicate requests (one `201`, nine `409`) and updated `docs/UML_Diagrams.md` §5.2.
+  - Implemented **US-02 (#20)**: `POST /assignments`, with one active instructor per student (`assignments/{studentId}`), `404 RESOURCE_NOT_FOUND` for unknown users, `400 ROLE_MISMATCH`, and `assignedBy` taken from the JWT (ADR-04).
+  - Implemented **US-04 (#22)**: student view of `GET /availability`. The assigned instructor is resolved from the JWT, only future `AVAILABLE` slots are returned (with `from`/`to` filters), and `403 INSTRUCTOR_NOT_ASSIGNED` is returned when no instructor is assigned.
+  - Added the service and repository layers (`validation/`, `services/`, `repositories/`) and dependency injection through `createApp({ ... })`, so the whole suite runs without Firebase. Added in-memory stand-ins (`memoryUserRepository.js`, `memoryAssignmentRepository.js`).
+  - Built the `npm run seed` script (first admin plus demo instructor and student, idempotent, required admin credentials in production) and added `scripts/` to the backend Docker image.
+  - Integration: added CORS (`CORS_ORIGINS`) to the backend and the frontend API client `frontend/src/api/client.js` (`VITE_API_BASE_URL`, Bearer token, `ApiError` with `status`/`code`). Updated `docs/API_Integration_Strategy.md` (environments; Prism mock on port 4010).
+  - Wrote 80 automated tests across `users`, `assignments`, `studentAvailability`, `cors`, `seed`, `userRepository` and `assignmentRepository` test files, and ran manual end-to-end checks against the Firestore emulator for each feature.
+- **Assigned & Authored Issues (Sprint 3):**
+  - [Issue #19](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/19): `US-01: Admin user management (Add Instructors and Students)` (Assignee)
+  - [Issue #20](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/20): `US-02: Admin student-instructor pairing and authorization` (Assignee)
+  - [Issue #22](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/22): `US-04: Student viewing assigned instructor availability` (Assignee)
+- **Pull Requests (Sprint 3):**
+  - [PR #93](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/93): `feat(backend): implement login and admin user management (#19)` (Merged)
+  - [PR #95](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/95): `feat(backend): implement student-instructor assignment (#20)` (Merged; re-opened by Eren against `develop` after the stacked [PR #94](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/94) was auto-closed)
+  - [PR #97](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/97): `feat: connect frontend to the backend (CORS + API client)` (Merged)
+  - [PR #101](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/101): `feat(backend): student view of assigned instructor availability (#22)` (Merged)
+- **Peer Review Activity (Sprint 3):** Formally reviewed and approved PR #95 and PR #102 (US-05: Appointment booking). For PR #102, verified the booking transaction against the Firestore emulator: 10 concurrent bookings of the same slot over 3 rounds, exactly one `201` and nine `409` each round.
+
 ---
 
 # Part 1: Sprint 2 Individual Contributions (Requirements & Architecture)

@@ -16,7 +16,8 @@ REST API skeleton for the Appointment and Class Scheduling System. It implements
 | CORS for the frontend (`CORS_ORIGINS`) | Done |
 | `POST /auth/login`, `GET /users`, `POST /users` (US-01, #19) | Done. bcrypt password hashes, unique emails, `npm run seed` for the first admin |
 | `POST /assignments` (US-02, #20) | Done. One instructor per student (`assignments/{studentId}`), `404` for unknown users, `400 ROLE_MISMATCH` |
-| Availability, appointments | In progress. These routes answer `501 NOT_IMPLEMENTED` after passing their guards. |
+| Availability (US-03 #21, US-04 #22) | Done. Instructors manage their own slots; students see only the future `AVAILABLE` slots of their assigned instructor (`403 INSTRUCTOR_NOT_ASSIGNED` otherwise) |
+| `POST /appointments` (US-05, #23) | In progress. Answers `501 NOT_IMPLEMENTED` after passing its guard. |
 
 ## Requirements
 
@@ -119,4 +120,4 @@ backend/
 └── tests/                      # Jest + Supertest
 ```
 
-The remaining services (AvailabilityService, AppointmentEngine) and repositories (AvailRepo, ApptRepo) follow the same pattern, as in the sequence diagrams.
+The remaining service (AppointmentEngine) and repository (ApptRepo) follow the same pattern, as in the sequence diagrams.

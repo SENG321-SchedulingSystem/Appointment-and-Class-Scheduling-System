@@ -25,7 +25,7 @@ function createApiRouter({ userRepo, assignmentRepo, availabilityRepo }) {
   const authService = createAuthService({ userRepo });
   const userService = createUserService({ userRepo });
   const assignmentService = createAssignmentService({ userRepo, assignmentRepo });
-  const availabilityService = createAvailabilityService({ availabilityRepo });
+  const availabilityService = createAvailabilityService({ availabilityRepo, assignmentRepo });
 
   // Public
   router.post('/auth/login', async (req, res) => {
@@ -48,7 +48,7 @@ function createApiRouter({ userRepo, assignmentRepo, availabilityRepo }) {
   });
 
   // US-03 / US-04: Availability
-  router.get('/availability', guard('INSTRUCTOR', 'STUDENT'), async (req, res, next) => {
+  router.get('/availability', guard('INSTRUCTOR', 'STUDENT'), async (req, res) => {
     if (req.user.role === 'INSTRUCTOR') {
       const validationErrors = validateAvailabilityQuery(req.query);
       if (validationErrors.length) {
@@ -59,8 +59,8 @@ function createApiRouter({ userRepo, assignmentRepo, availabilityRepo }) {
       }
       return res.json(await availabilityService.listInstructorSlots(req.user.id, req.query));
     }
-    // US-04 (#22): Student view is handled in the next user story.
-    return next(ApiError.notImplemented('listAvailability'));
+    // US-04 (#22): the instructor is resolved from the student's assignment, never from the query.
+    return res.json(await availabilityService.listStudentSlots(req.user.id, req.query));
   });
 
   router.post('/availability', guard('INSTRUCTOR'), async (req, res) => {

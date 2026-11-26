@@ -1,6 +1,7 @@
 'use strict';
 
-// AvailabilityService: handles instructor calendar availability management (US-03, FR-05, FR-06).
+// AvailabilityService: instructor calendar management (US-03, FR-05, FR-06) and
+// the student view of the assigned instructor's open slots (US-04, FR-07).
 // Business rules and validation follow docs/UML_Diagrams.md §3 and docs/SRS.md §3.3.
 
 const ApiError = require('../errors/ApiError');
@@ -10,7 +11,7 @@ const {
   validateSlotId,
 } = require('../validation/validators');
 
-function createAvailabilityService({ availabilityRepo }) {
+function createAvailabilityService({ availabilityRepo, assignmentRepo }) {
   return {
     async createSlot(instructorId, body) {
       const errors = validateNewAvailability(body);
@@ -53,6 +54,35 @@ function createAvailabilityService({ availabilityRepo }) {
         from: query.from,
         to: query.to,
       });
+    },
+
+    // FR-07 rule 1: a student sees only the future AVAILABLE slots of the one
+    // instructor assigned to them. BOOKED slots and other instructors' slots
+    // are never returned (privacy).
+    async listStudentSlots(studentId, query = {}) {
+      const errors = validateAvailabilityQuery(query);
+      if (errors.length) {
+        throw ApiError.badRequest(errors.join(' '));
+      }
+
+      const assignment = await assignmentRepo.findByStudentId(studentId);
+      if (!assignment) {
+        throw ApiError.forbidden('You have not been assigned to an instructor yet.', 'INSTRUCTOR_NOT_ASSIGNED');
+      }
+      if (query.instructorId && query.instructorId !== assignment.instructorId) {
+        throw ApiError.forbidden(
+          'You are not authorized to view the availability of an instructor who is not assigned to you.',
+          'INSTRUCTOR_NOT_ASSIGNED',
+        );
+      }
+
+      const slots = await availabilityRepo.findByInstructorId(assignment.instructorId, {
+        from: query.from,
+        to: query.to,
+        status: 'AVAILABLE',
+      });
+      const now = Date.now();
+      return slots.filter((s) => Date.parse(s.startTime) > now);
     },
 
     async deleteSlot(slotId, callerInstructorId) {

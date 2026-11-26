@@ -91,8 +91,10 @@ describe('role authorization matrix (docs/UML_Diagrams.md §4.1)', () => {
       test(`${role} ${method.toUpperCase()} ${path} -> ${isAllowed ? 'passes guard' : '403'}`, async () => {
         const res = await request(app)[method](path).set('Authorization', tokenFor(role));
         if (isAllowed) {
-          // Guard passed; whatever the handler answers, it is not an auth error.
-          expect([401, 403]).not.toContain(res.status);
+          // Guard passed; whatever the handler answers, it is not a role error.
+          // (A business-rule 403 such as INSTRUCTOR_NOT_ASSIGNED is fine.)
+          expect(res.status).not.toBe(401);
+          expect(res.body.code).not.toBe('FORBIDDEN');
         } else {
           expectProblem(res, 403, 'FORBIDDEN');
         }

@@ -61,4 +61,13 @@ export const api = {
   createUser: (token, user) => apiRequest('/users', { method: 'POST', token, body: user }),
   assignStudent: (token, studentId, instructorId) =>
     apiRequest('/assignments', { method: 'POST', token, body: { studentId, instructorId } }),
+
+  // Instructor: own slots (AVAILABLE + BOOKED). Student: assigned instructor's
+  // future AVAILABLE slots; 403 INSTRUCTOR_NOT_ASSIGNED if nobody is assigned.
+  listAvailability: (token, { from, to, instructorId } = {}) =>
+    apiRequest('/availability', { token, query: { from, to, instructorId } }),
+  addAvailability: (token, startTime, endTime) =>
+    apiRequest('/availability', { method: 'POST', token, body: { startTime, endTime } }),
+  deleteAvailability: (token, id) =>
+    apiRequest(`/availability/${encodeURIComponent(id)}`, { method: 'DELETE', token }),
 }

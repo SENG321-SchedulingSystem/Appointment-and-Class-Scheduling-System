@@ -44,6 +44,13 @@ function createMemoryAppointmentRepository({ availabilityRepo, assignmentRepo })
           );
         }
 
+        if (slot.startTime && Date.parse(slot.startTime) <= Date.now()) {
+          throw ApiError.badRequest(
+            'Cannot book an availability slot that has already started.',
+            'PAST_START_TIME',
+          );
+        }
+
         const assignment = await assignmentRepo.findByStudentId(studentId);
         if (!assignment || assignment.instructorId !== slot.instructorId) {
           throw ApiError.forbidden(

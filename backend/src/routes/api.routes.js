@@ -15,8 +15,6 @@ const { createAvailabilityService } = require('../services/availabilityService')
 const { createAppointmentService } = require('../services/appointmentService');
 const { validateAvailabilityQuery } = require('../validation/validators');
 
-const notImplemented = (operationId) => (_req, _res, next) => next(ApiError.notImplemented(operationId));
-
 // Bearer JWT check followed by a role check. Applied per route, so unknown
 // paths still fall through to the 404 handler instead of answering 401.
 const guard = (...roles) => [authenticate, requireRole(...roles)];

@@ -31,6 +31,7 @@ let appointmentRepo;
 let app;
 
 const hoursFromNow = (h) => new Date(Date.now() + h * 3600 * 1000).toISOString();
+const hoursAgo = (h) => new Date(Date.now() - h * 3600 * 1000).toISOString();
 
 beforeEach(async () => {
   userRepo = createMemoryUserRepository();
@@ -150,6 +151,23 @@ describe('POST /appointments (US-05: Book appointment)', () => {
     expectProblem(res, 404, 'SLOT_NOT_FOUND');
   });
 
+  test('400 PAST_START_TIME when attempting to book a slot that has already started', async () => {
+    await availabilityRepo.create({
+      id: 'avail_past',
+      instructorId: 'inst_A',
+      startTime: hoursAgo(2),
+      endTime: hoursAgo(1),
+      status: 'AVAILABLE',
+    });
+
+    const res = await request(app)
+      .post('/appointments')
+      .set('Authorization', STUDENT_1)
+      .send({ availabilityId: 'avail_past' });
+
+    expectProblem(res, 400, 'PAST_START_TIME');
+  });
+
   test('400 for missing availabilityId or invalid payload format', async () => {
     const resEmpty = await request(app)
       .post('/appointments')
@@ -247,19 +265,5 @@ describe('Concurrent Booking Prevention (Scenario 2 & NFR-C1/C2)', () => {
     expect(appointmentRepo.appointments.size).toBe(1);
     const slot = await availabilityRepo.findById('avail_101');
     expect(slot.status).toBe('BOOKED');
-  });
-
-  test('appointmentService.getAppointment returns appointment or throws 404', async () => {
-    const { createAppointmentService } = require('../src/services/appointmentService');
-    const service = createAppointmentService({ appointmentRepo });
-
-    const appt = await appointmentRepo.bookAppointment({ studentId: 'stu_1', availabilityId: 'avail_101' });
-    const found = await service.getAppointment(appt.id);
-    expect(found).toEqual(appt);
-
-    await expect(service.getAppointment('nonexistent')).rejects.toMatchObject({
-      status: 404,
-      code: 'RESOURCE_NOT_FOUND',
-    });
   });
 });

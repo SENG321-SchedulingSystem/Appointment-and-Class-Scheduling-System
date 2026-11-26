@@ -24,14 +24,6 @@ function createAppointmentService({ appointmentRepo }) {
         availabilityId: body.availabilityId,
       });
     },
-
-    async getAppointment(id) {
-      const appt = await appointmentRepo.findById(id);
-      if (!appt) {
-        throw ApiError.notFound('Appointment not found.');
-      }
-      return appt;
-    },
   };
 }
 

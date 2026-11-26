@@ -30,7 +30,7 @@ This document serves as the formal individual contributions record for **Team 4*
   - [Issue #23](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/23): `US-05: Student appointment booking with concurrency prevention` (Assignee)
 - **Pull Requests (Sprint 3):**
   - [PR #98](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/98): `feat(backend): implement instructor availability management (#21)` (Merged)
-  - Upcoming PR: `feat(backend): student appointment booking with concurrency prevention (#23)`
+  - [PR #102](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/102): `feat(backend): student appointment booking with concurrency prevention (#23)`
 - **Peer Review Activity (Sprint 3):** Formally reviewed and approved PR #93 (US-01: Auth & Users), PR #97 (CORS & API Client), and PR #101 (US-04: Student Availability).
 
 ---

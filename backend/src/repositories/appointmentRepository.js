@@ -42,6 +42,13 @@ function createAppointmentRepository(db = getDb) {
 
         const slotData = slotDoc.data();
 
+        if (slotData.startTime && Date.parse(slotData.startTime) <= Date.now()) {
+          throw ApiError.badRequest(
+            'Cannot book an availability slot that has already started.',
+            'PAST_START_TIME',
+          );
+        }
+
         const assignmentRef = assignments().doc(studentId);
         const assignmentDoc = await transaction.get(assignmentRef);
 

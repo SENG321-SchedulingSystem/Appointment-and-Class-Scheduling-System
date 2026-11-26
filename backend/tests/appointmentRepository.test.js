@@ -96,6 +96,23 @@ describe('Firestore appointmentRepository', () => {
     });
   });
 
+  test('bookAppointment throws 400 when slot startTime is in the past', async () => {
+    db.store.set('availabilities/avail_past', {
+      id: 'avail_past',
+      instructorId: 'inst_A',
+      startTime: '2026-11-01T10:00:00Z',
+      endTime: '2026-11-01T11:00:00Z',
+      status: 'AVAILABLE',
+    });
+
+    await expect(
+      repo.bookAppointment({ studentId: 'stu_1', availabilityId: 'avail_past' }),
+    ).rejects.toMatchObject({
+      status: 400,
+      code: 'PAST_START_TIME',
+    });
+  });
+
   test('bookAppointment throws 403 when student is not assigned to the slot instructor', async () => {
     db.store.set('availabilities/avail_other', {
       id: 'avail_other',

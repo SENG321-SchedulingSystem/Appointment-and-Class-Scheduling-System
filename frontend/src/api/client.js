@@ -70,4 +70,9 @@ export const api = {
     apiRequest('/availability', { method: 'POST', token, body: { startTime, endTime } }),
   deleteAvailability: (token, id) =>
     apiRequest(`/availability/${encodeURIComponent(id)}`, { method: 'DELETE', token }),
+
+  // Student: book an open availability slot of their assigned instructor.
+  // Returns 201 with the created appointment; 409 if the slot was already booked.
+  bookAppointment: (token, availabilityId) =>
+    apiRequest('/appointments', { method: 'POST', token, body: { availabilityId } }),
 }

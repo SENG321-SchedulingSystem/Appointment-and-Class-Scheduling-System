@@ -8,11 +8,18 @@ const { config } = require('../src/config/env');
 const { createMemoryUserRepository } = require('./helpers/memoryUserRepository');
 const { createMemoryAssignmentRepository } = require('./helpers/memoryAssignmentRepository');
 const { createMemoryAvailabilityRepository } = require('./helpers/memoryAvailabilityRepository');
+const { createMemoryAppointmentRepository } = require('./helpers/memoryAppointmentRepository');
+
+const userRepo = createMemoryUserRepository();
+const assignmentRepo = createMemoryAssignmentRepository();
+const availabilityRepo = createMemoryAvailabilityRepository();
+const appointmentRepo = createMemoryAppointmentRepository({ availabilityRepo, assignmentRepo });
 
 const app = createApp({
-  userRepo: createMemoryUserRepository(),
-  assignmentRepo: createMemoryAssignmentRepository(),
-  availabilityRepo: createMemoryAvailabilityRepository(),
+  userRepo,
+  assignmentRepo,
+  availabilityRepo,
+  appointmentRepo,
 });
 
 const tokenFor = (role, id = `${role.toLowerCase()}_1`) => `Bearer ${signToken({ id, role })}`;

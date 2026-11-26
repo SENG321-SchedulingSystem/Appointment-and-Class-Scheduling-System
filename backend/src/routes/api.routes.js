@@ -12,6 +12,7 @@ const { createAuthService } = require('../services/authService');
 const { createUserService } = require('../services/userService');
 const { createAssignmentService } = require('../services/assignmentService');
 const { createAvailabilityService } = require('../services/availabilityService');
+const { createAppointmentService } = require('../services/appointmentService');
 const { validateAvailabilityQuery } = require('../validation/validators');
 
 const notImplemented = (operationId) => (_req, _res, next) => next(ApiError.notImplemented(operationId));
@@ -20,12 +21,13 @@ const notImplemented = (operationId) => (_req, _res, next) => next(ApiError.notI
 // paths still fall through to the 404 handler instead of answering 401.
 const guard = (...roles) => [authenticate, requireRole(...roles)];
 
-function createApiRouter({ userRepo, assignmentRepo, availabilityRepo }) {
+function createApiRouter({ userRepo, assignmentRepo, availabilityRepo, appointmentRepo }) {
   const router = Router();
   const authService = createAuthService({ userRepo });
   const userService = createUserService({ userRepo });
   const assignmentService = createAssignmentService({ userRepo, assignmentRepo });
   const availabilityService = createAvailabilityService({ availabilityRepo, assignmentRepo });
+  const appointmentService = createAppointmentService({ appointmentRepo });
 
   // Public
   router.post('/auth/login', async (req, res) => {
@@ -73,7 +75,9 @@ function createApiRouter({ userRepo, assignmentRepo, availabilityRepo }) {
   });
 
   // US-05: Appointment booking
-  router.post('/appointments', guard('STUDENT'), notImplemented('createAppointment'));
+  router.post('/appointments', guard('STUDENT'), async (req, res) => {
+    res.status(201).json(await appointmentService.bookAppointment(req.user.id, req.body));
+  });
 
   return router;
 }

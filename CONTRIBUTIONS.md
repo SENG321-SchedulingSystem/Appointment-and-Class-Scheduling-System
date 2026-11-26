@@ -4,9 +4,34 @@
 **Project Name:** Appointment and Class Scheduling System  
 **Academic Semester:** Fall 2026  
 **Institution:** Ankara Science University — Department of Computer Engineering  
-**Releases:** [`sprint-1`](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/releases/tag/sprint-1) | `sprint-2`  
+**Releases:** [`sprint-1`](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/releases/tag/sprint-1) | [`sprint-2`](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/releases/tag/sprint-2) | `sprint-3` (in progress)  
 
-This document serves as the formal individual contributions record for **Team 4**, documenting each member's student information, assigned engineering roles, completed deliverables, and verifiable audit trails across GitHub Issues, Pull Requests, Commits, and Peer Reviews across **Sprint 1** and **Sprint 2**.
+This document serves as the formal individual contributions record for **Team 4**, documenting each member's student information, assigned engineering roles, completed deliverables, and verifiable audit trails across GitHub Issues, Pull Requests, Commits, and Peer Reviews across **Sprint 1**, **Sprint 2**, and **Sprint 3**.
+
+---
+
+# Part 0: Sprint 3 Individual Contributions (MVP, CI/CD & Test Automation)
+
+## Sprint 3 Member Contribution Profiles
+
+### 1. Eren Okat
+- **Student ID:** 230204008
+- **GitHub Username:** [@erenokt3](https://github.com/erenokt3)
+- **Assigned Role (Sprint 3):** Tech Lead & Core Engine Developer (Backend: Randevu Motoru)
+- **Primary Responsibilities:**
+  - Implemented **US-03 (#21)**: Instructor calendar availability management (`POST /availability`, `GET /availability` instructor view, and `DELETE /availability/{id}`).
+  - Implemented **US-05 (#23)**: Student appointment booking with concurrency prevention (`POST /appointments`, Firestore transactional check-and-set, atomic slot locking, and `409 Conflict: SLOT_UNAVAILABLE`).
+  - Developed in-memory repository stand-ins (`memoryAvailabilityRepository.js`, `memoryAppointmentRepository.js`) enabling decoupled, sub-second test execution without emulator lock overhead.
+  - Implemented high-concurrency race condition and stress tests (2-way and 5-way concurrent booking) verifying deterministic mutual exclusion (exactly one `201 Created` and all competing requests receiving `409 Conflict`).
+  - Added frontend API client method `bookAppointment` in `frontend/src/api/client.js`.
+  - Acted as primary technical reviewer for backend PRs, formally reviewing and approving PR #93, PR #97, and PR #101.
+- **Assigned & Authored Issues (Sprint 3):**
+  - [Issue #21](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/21): `US-03: Instructor calendar availability management` (Assignee)
+  - [Issue #23](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/issues/23): `US-05: Student appointment booking with concurrency prevention` (Assignee)
+- **Pull Requests (Sprint 3):**
+  - [PR #98](https://github.com/SENG321-SchedulingSystem/Appointment-and-Class-Scheduling-System/pull/98): `feat(backend): implement instructor availability management (#21)` (Merged)
+  - Upcoming PR: `feat(backend): student appointment booking with concurrency prevention (#23)`
+- **Peer Review Activity (Sprint 3):** Formally reviewed and approved PR #93 (US-01: Auth & Users), PR #97 (CORS & API Client), and PR #101 (US-04: Student Availability).
 
 ---
 

@@ -108,6 +108,17 @@ function validateSlotId(id) {
   return [];
 }
 
+function validateNewAppointment(body) {
+  if (!isObject(body)) return ['Request body must be a JSON object.'];
+  const errors = [];
+  if (!isNonEmptyString(body.availabilityId)) {
+    errors.push('availabilityId is required.');
+  } else if (!ID_RE.test(body.availabilityId)) {
+    errors.push('availabilityId is not a valid id.');
+  }
+  return errors;
+}
+
 module.exports = {
   PASSWORD_MIN_LENGTH,
   normalizeEmail,
@@ -119,4 +130,5 @@ module.exports = {
   validateNewAvailability,
   validateAvailabilityQuery,
   validateSlotId,
+  validateNewAppointment,
 };

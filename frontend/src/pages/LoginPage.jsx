@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import { ROLE_HOME, useAuth } from '../auth/AuthContext'
+import { ErrorBox, Field } from '../components/FormControls'
+import { CalendarIcon } from '../components/Icons'
 
 // Screen 1 - Login (Figma 1a, 1b, 1c). POST /auth/login through client.js.
 export default function LoginPage() {
-  const { user, login } = useAuth()
+  const { user, login, sessionExpired } = useAuth()
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
@@ -73,9 +75,9 @@ export default function LoginPage() {
           <h1 className="mt-6 text-3xl font-semibold text-[#0B1F38]">Sign in</h1>
           <p className="mt-1 text-sm text-slate-500">Welcome back. Sign in to continue.</p>
 
-          {formError && (
-            <div role="alert" className="mt-6">
-              <ErrorBox>{formError}</ErrorBox>
+          {(formError || sessionExpired) && (
+            <div className="mt-6">
+              <ErrorBox>{formError || 'Your session has expired, please sign in again'}</ErrorBox>
             </div>
           )}
 
@@ -112,53 +114,6 @@ export default function LoginPage() {
         </div>
       </main>
     </div>
-  )
-}
-
-function Field({ id, label, error, onChange, ...inputProps }) {
-  return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium text-slate-800">
-        {label}
-      </label>
-      <input
-        id={id}
-        {...inputProps}
-        onChange={(e) => onChange(e.target.value)}
-        aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className={`mt-2 w-full rounded-lg border px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#0F2A4A]/20 ${
-          error ? 'border-[#FCA5A5]' : 'border-[#DCE4EF]'
-        }`}
-      />
-      {error && (
-        <div id={`${id}-error`} className="mt-2">
-          <ErrorBox>{error}</ErrorBox>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function ErrorBox({ children }) {
-  return (
-    <div className="flex items-center gap-2 rounded-lg bg-[#FEF2F2] px-4 py-3 text-sm text-[#B91C1C]">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 shrink-0">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
-      </svg>
-      <span>{children}</span>
-    </div>
-  )
-}
-
-function CalendarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-7 w-7">
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <path d="M3 10h18M8 3v4M16 3v4" strokeLinecap="round" />
-      <rect x="7" y="14" width="2" height="2" fill="currentColor" stroke="none" />
-    </svg>
   )
 }
 

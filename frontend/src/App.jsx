@@ -1,7 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthProvider'
+import AdminLayout from './components/AdminLayout'
 import ProtectedRoute from './components/ProtectedRoute'
-import AdminPage from './pages/AdminPage'
+import AssignStudentPage from './pages/admin/AssignStudentPage'
+import CreateUserPage from './pages/admin/CreateUserPage'
 import InstructorPage from './pages/InstructorPage'
 import LoginPage from './pages/LoginPage'
 import StudentPage from './pages/StudentPage'
@@ -16,10 +18,14 @@ function App() {
             path="/admin"
             element={
               <ProtectedRoute role="ADMIN">
-                <AdminPage />
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Navigate to="users" replace />} />
+            <Route path="users" element={<CreateUserPage />} />
+            <Route path="pairings" element={<AssignStudentPage />} />
+          </Route>
           <Route
             path="/instructor"
             element={

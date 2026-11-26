@@ -13,6 +13,7 @@ REST API skeleton for the Appointment and Class Scheduling System. It implements
 | Firebase Admin SDK connection (Local Emulator or Cloud Firestore) | Done, checked by `GET /health/ready` |
 | Bearer JWT authentication (`401`) and role guards (`403`) on every contract route | Done |
 | RFC 7807 `application/problem+json` error handler | Done |
+| CORS for the frontend (`CORS_ORIGINS`) | Done |
 | `POST /auth/login`, `GET /users`, `POST /users` (US-01, #19) | Done. bcrypt password hashes, unique emails, `npm run seed` for the first admin |
 | `POST /assignments` (US-02, #20) | Done. One instructor per student (`assignments/{studentId}`), `404` for unknown users, `400 ROLE_MISMATCH` |
 | Availability, appointments | In progress. These routes answer `501 NOT_IMPLEMENTED` after passing their guards. |
@@ -69,6 +70,7 @@ The tests do not need Firebase: they inject an in-memory user repository (`tests
 | `NODE_ENV` | `development` | `production` requires `JWT_SECRET` |
 | `JWT_SECRET` | dev-only value | HS256 signing secret. Never commit a real secret. |
 | `JWT_EXPIRES_IN` | `1h` | Token lifetime |
+| `CORS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` (none in production) | Comma-separated browser origins allowed to call the API. Set it to the Vercel URL when deploying. `*` allows any origin. |
 | `FIREBASE_PROJECT_ID` | `demo-scheduling` | A `demo-` id runs offline against the emulator |
 | `FIRESTORE_EMULATOR_HOST` | empty | For example `localhost:8080`. When empty, Cloud Firestore is used with Application Default Credentials. |
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | dev demo admin | Admin created by `npm run seed`. Required when `NODE_ENV=production`. |
@@ -108,6 +110,7 @@ backend/
 │   │   └── assignmentRepository.js # assignments/{studentId}
 │   ├── middleware/
 │   │   ├── auth.js             # authenticate (JWT) and requireRole (RBAC)
+│   │   ├── cors.js             # CORS for the allowed frontend origins
 │   │   └── errorHandler.js     # 404 and global problem+json handler
 │   └── routes/
 │       ├── health.routes.js    # /health, /health/ready (not part of the contract)

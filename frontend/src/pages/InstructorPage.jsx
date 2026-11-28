@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ApiError, api } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { ErrorBox, Field, PrimaryButton, SuccessBox } from '../components/FormControls'
@@ -36,13 +36,23 @@ function sortByStartTime(list) {
   return [...list].sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
 }
 
+function getListErrorMessage(err) {
+  if (err instanceof ApiError && err.status === 0) {
+    return 'Cannot reach the server, please try again'
+  }
+  if (err instanceof ApiError && err.status === 403) {
+    return 'You do not have permission to view these availability slots'
+  }
+  return 'Could not load availability slots, please refresh the page'
+}
+
 // Screen 3 - Instructor availability management (FR-05, FR-06, FR-07).
 export default function InstructorPage() {
   const { user, callApi } = useAuth()
   const instructorId = user?.userId
 
   const [slots, setSlots] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(Boolean(instructorId))
   const [listError, setListError] = useState('')
   const [actionError, setActionError] = useState('')
   const [actionSuccess, setActionSuccess] = useState('')
@@ -56,7 +66,31 @@ export default function InstructorPage() {
   const [formSuccess, setFormSuccess] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const fetchSlots = useCallback(async () => {
+  useEffect(() => {
+    if (!instructorId) return
+    let cancelled = false
+
+    callApi((token) => api.listAvailability(token, { instructorId }))
+      .then((data) => {
+        if (!cancelled) {
+          setSlots(sortByStartTime(Array.isArray(data) ? data : []))
+          setListError('')
+        }
+      })
+      .catch((err) => {
+        if (cancelled || (err instanceof ApiError && err.status === 401)) return
+        setListError(getListErrorMessage(err))
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [callApi, instructorId])
+
+  async function refreshSlots() {
     if (!instructorId) return
     setLoading(true)
     setListError('')
@@ -65,21 +99,11 @@ export default function InstructorPage() {
       setSlots(sortByStartTime(Array.isArray(data) ? data : []))
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) return
-      if (err instanceof ApiError && err.status === 0) {
-        setListError('Cannot reach the server, please try again')
-      } else if (err instanceof ApiError && err.status === 403) {
-        setListError('You do not have permission to view these availability slots')
-      } else {
-        setListError('Could not load availability slots, please refresh the page')
-      }
+      setListError(getListErrorMessage(err))
     } finally {
       setLoading(false)
     }
-  }, [callApi, instructorId])
-
-  useEffect(() => {
-    fetchSlots()
-  }, [fetchSlots])
+  }
 
   async function handleAddSlot(e) {
     e.preventDefault()
@@ -158,7 +182,7 @@ export default function InstructorPage() {
         setActionError('Could not delete slot, please try again')
       } else if (err.status === 409) {
         setActionError('This slot has already been booked by a student and cannot be deleted.')
-        fetchSlots()
+        refreshSlots()
       } else if (err.status === 404) {
         setActionError('This slot no longer exists.')
         setSlots((prev) => prev.filter((item) => item.id !== slot.id))
@@ -243,7 +267,7 @@ export default function InstructorPage() {
 
             <button
               type="button"
-              onClick={fetchSlots}
+              onClick={refreshSlots}
               disabled={loading}
               className="rounded-lg border border-[#DCE4EF] bg-white px-4 py-2 text-sm font-medium text-[#0F2A4A] hover:bg-[#F8FAFC] disabled:cursor-not-allowed disabled:opacity-60"
             >
